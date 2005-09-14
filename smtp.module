@@ -25,7 +25,7 @@ if (variable_get('smtp_on', 1)) {
 /**
  * PHPMailer language settings.  
  * English Version
- * Pulled from phpmailer.lang-en.php and t() functions added from drupal translations.
+ * Pulled from phpmailer.lang-en.php and t() functions added for drupal translations.
  */
 $PHPMAILER_LANG = array();
 $PHPMAILER_LANG["provide_address"] = t('You must provide at least one recipient email address.');
@@ -72,7 +72,7 @@ function smtp_settings() {
              variable_get('smtp_hostbackup', ''), 40, 200,
              t('The address of your outgoing SMTP backup server. If the primary server can\'t be found this one will be tried. This is optional.'));
   $output .= form_textfield(t('SMTP Server Port'), 'smtp_port',
-             variable_get('smtp_port', '25'), 40, 200,
+             variable_get('smtp_port', '25'), 5, 5,
              t('SMTP server port to use.'));
   $output .= form_textfield(t('Username'), 'smtp_username',
              variable_get('smtp_username', ''), 40, 200,
@@ -82,7 +82,7 @@ function smtp_settings() {
              t('SMTP password.'));
   $output .= form_textfield(t('From Name'), 'smtp_fromname',
              variable_get('smtp_fromname', ''), 40, 200,
-             t('The name that all emails will be from. If left blank will use the site name.'));
+             t('The name that all emails will be from. If left blank will use the site name of: ') . variable_get('site_name', 'Drupal powered site'));
 
   return $output;
 }
