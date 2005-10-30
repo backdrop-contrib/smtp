@@ -84,6 +84,8 @@ function smtp_settings() {
   $form['server']['smtp_port'] = array(
     '#type' => 'textfield',
     '#title' => t('SMTP Server Port'),
+    '#size' => 5,
+    '#maxlength' => 5,
     '#default_value' => variable_get('smtp_port', '25'),
     '#description' => t('SMTP server port to use.'));
   
