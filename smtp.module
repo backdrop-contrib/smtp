@@ -62,29 +62,51 @@ function smtp_settings() {
   if (!user_access('administer site configuration')) {
     return message_access();
   }
-  $output .= form_radios(t('Turn this module On or Off'), 'smtp_on',
-             variable_get('smtp_on', 1), array(1 => 'On', 0 => 'Off'),
-             t('To uninstall this module you must turn it off before you delete it.'));
-  $output .= form_textfield(t('SMTP Server'), 'smtp_host',
-             variable_get('smtp_host', ''), 40, 200,
-             t('The address of your outgoing SMTP server.'));
-  $output .= form_textfield(t('SMTP Backup Server'), 'smtp_hostbackup',
-             variable_get('smtp_hostbackup', ''), 40, 200,
-             t('The address of your outgoing SMTP backup server. If the primary server can\'t be found this one will be tried. This is optional.'));
-  $output .= form_textfield(t('SMTP Server Port'), 'smtp_port',
-             variable_get('smtp_port', '25'), 5, 5,
-             t('SMTP server port to use.'));
-  $output .= form_textfield(t('Username'), 'smtp_username',
-             variable_get('smtp_username', ''), 40, 200,
-             t('SMTP Username.'));
-  $output .= form_textfield(t('Password'), 'smtp_password',
-             variable_get('smtp_password', ''), 40, 200,
-             t('SMTP password.'));
-  $output .= form_textfield(t('From Name'), 'smtp_fromname',
-             variable_get('smtp_fromname', ''), 40, 200,
-             t('The name that all emails will be from. If left blank will use the site name of: ') . variable_get('site_name', 'Drupal powered site'));
-
-  return $output;
+  $form['onoff'] = array('#type' => 'fieldset', '#title' => t('Install options'));
+  $form['onoff']['smtp_on'] = array(
+    '#type' => 'radios',
+    '#title' => t('Turn this module On or Off'),
+    '#default_value' => variable_get('smtp_on', 1),
+    '#options' => array(1 => 'On', 0 => 'Off'),
+    '#description' => t('To uninstall this module you must turn it off here first.'));
+  
+  $form['server'] = array('#type' => 'fieldset', '#title' => t('SMTP server settings'));
+  $form['server']['smtp_host'] = array(
+    '#type' => 'textfield',
+    '#title' => t('SMTP Server'),
+    '#default_value' => variable_get('smtp_host', ''),
+    '#description' => t('The address of your outgoing SMTP server.'));
+  $form['server']['smtp_hostbackup'] = array(
+    '#type' => 'textfield',
+    '#title' => t('SMTP Backup Server'),
+    '#default_value' => variable_get('smtp_hostbackup', ''),
+    '#description' => t('The address of your outgoing SMTP backup server. If the primary server can\'t be found this one will be tried. This is optional.'));
+  $form['server']['smtp_port'] = array(
+    '#type' => 'textfield',
+    '#title' => t('SMTP Server Port'),
+    '#default_value' => variable_get('smtp_port', '25'),
+    '#description' => t('SMTP server port to use.'));
+  
+  $form['auth'] = array('#type' => 'fieldset', '#title' => t('SMTP Authentication'), '#description' => t('Leave blank if your SMTP server does not require authentication.'));
+  $form['auth']['smtp_username'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Username'),
+    '#default_value' => variable_get('smtp_username', ''),
+    '#description' => t('SMTP Username.'));
+  $form['auth']['smtp_password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Password'),
+    '#default_value' => variable_get('smtp_password', ''),
+    '#description' => t('SMTP password.'));
+    
+  $form['email_options'] = array('#type' => 'fieldset', '#title' => t('eMail options'));
+  $form['email_options']['smtp_fromname'] = array(
+    '#type' => 'textfield',
+    '#title' => t('eMail from Name'),
+    '#default_value' => variable_get('smtp_fromname', ''),
+    '#description' => t('The name that all emails will be from. If left blank will use the site name of: ') . variable_get('site_name', 'Drupal powered site'));
+    
+  return $form;
 }
 
 /**
