@@ -1,6 +1,6 @@
 // $Id$
 
-SMTP MODULE
+SMTP MODULE for DRUPAL 4.7
 -----
 
 This module adds SMTP functionality to Drupal.
@@ -10,6 +10,5 @@ http://phpmailer.sourceforge.net
 
 TODO
 -Settings option to send test eMail.
--Add 4.6 branch.
 
 Please send comments to luke {at} lukelast [.] com
