@@ -154,6 +154,7 @@ function user_mail_wrapper($to, $subject, $message, $header) {
 	$mail->SMTPAuth = $auth;
 	$mail->Username = $username;
 	$mail->Password = $password;
+	$mail->CharSet = 'utf-8';
 	
 	$mail->From = $from;
 	$mail->FromName = $from_name;
