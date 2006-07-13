@@ -22,24 +22,6 @@ if (variable_get('smtp_on', 1)) {
   variable_del('smtp_library');
 }
 
-/**
- * PHPMailer language settings.  
- * English Version
- * Pulled from phpmailer.lang-en.php and t() functions added for drupal translations.
- */
-$PHPMAILER_LANG = array();
-$PHPMAILER_LANG["provide_address"] = t('You must provide at least one recipient email address.');
-$PHPMAILER_LANG["mailer_not_supported"] = ' ' . t('mailer is not supported.');
-$PHPMAILER_LANG["execute"] = t('Could not execute:') . ' ';
-$PHPMAILER_LANG["instantiate"] = t('Could not instantiate mail function.');
-$PHPMAILER_LANG["authenticate"] = t('SMTP Error: Could not authenticate.');
-$PHPMAILER_LANG["from_failed"] = t('The following From address failed:') . ' ';
-$PHPMAILER_LANG["recipients_failed"] = t('SMTP Error: The following recipients failed:') . ' ';
-$PHPMAILER_LANG["data_not_accepted"] = t('SMTP Error: Data not accepted.');
-$PHPMAILER_LANG["connect_host"] = t('SMTP Error: Could not connect to SMTP host.');
-$PHPMAILER_LANG["file_access"] = t('Could not access file:') . ' ';
-$PHPMAILER_LANG["file_open"] = t('File Error: Could not open file:') . ' ';
-$PHPMAILER_LANG["encoding"] = t('Unknown encoding:') . ' ';
 
 /**
  * Implementation of hook_help().
@@ -172,10 +154,35 @@ function user_mail_wrapper($to, $subject, $message, $header) {
 }
 
 
+/**
+ * PHPMailer language settings.  
+ * English Version
+ * Pulled from phpmailer.lang-en.php and t() functions added for drupal translations.
+ * This function is called in the line "$this->language = _smtp_initialize_language();" around line 794.
+ */
+function _smtp_initialize_language(){
+  $PHPMAILER_LANG = array();
+  $PHPMAILER_LANG["provide_address"] = t('You must provide at least one recipient email address.');
+  $PHPMAILER_LANG["mailer_not_supported"] = ' ' . t('mailer is not supported.');
+  $PHPMAILER_LANG["execute"] = t('Could not execute:') . ' ';
+  $PHPMAILER_LANG["instantiate"] = t('Could not instantiate mail function.');
+  $PHPMAILER_LANG["authenticate"] = t('SMTP Error: Could not authenticate.');
+  $PHPMAILER_LANG["from_failed"] = t('The following From address failed:') . ' ';
+  $PHPMAILER_LANG["recipients_failed"] = t('SMTP Error: The following recipients failed:') . ' ';
+  $PHPMAILER_LANG["data_not_accepted"] = t('SMTP Error: Data not accepted.');
+  $PHPMAILER_LANG["connect_host"] = t('SMTP Error: Could not connect to SMTP host.');
+  $PHPMAILER_LANG["file_access"] = t('Could not access file:') . ' ';
+  $PHPMAILER_LANG["file_open"] = t('File Error: Could not open file:') . ' ';
+  $PHPMAILER_LANG["encoding"] = t('Unknown encoding:') . ' ';
+  return $PHPMAILER_LANG;
+}
+
+
 /**************************************************************************************************
  * Changes to the PHPMailer class's are as follows.
  * Commented out line "include_once($this->PluginDir . "class.smtp.php");" from function SmtpSend().
  * Commented out everything in function SetLanguage() except "$this->language = $PHPMAILER_LANG; return TRUE".
+ * Changed line "$this->language = $PHPMAILER_LANG;" to "$this->language = _smtp_initialize_language();"
  **************************************************************************************************/
 
 
@@ -784,7 +791,7 @@ class PHPMailer
             $this->SetError("Could not load language file");
             return false;
         }*/
-        $this->language = $PHPMAILER_LANG;
+        $this->language = _smtp_initialize_language();
 
         return true;
     }
