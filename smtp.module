@@ -9,18 +9,7 @@
  * @link http://phpmailer.sourceforge.net
  */
 
-//Override the smtp_library variable.
-if (variable_get('smtp_on', 1)) {
-  if (is_file(getcwd() . '/' . 'modules/smtp.module')) {
-    variable_set('smtp_library', 'modules/smtp.module');
-  }elseif (is_file(getcwd() . '/' . 'modules/smtp/smtp.module')) {
-    variable_set('smtp_library', 'modules/smtp/smtp.module');
-  } else {
-    drupal_set_message(t("Can't find module"), 'error');
-  }
-} else {
-  variable_del('smtp_library');
-}
+
 
 
 /**
@@ -37,13 +26,32 @@ function smtp_help($section) {
  * Settings Hook
  *
  * @return
- *   string of form content or error message
+ *   An array containing form items to place on the module settings page.
  */
 function smtp_settings() {
   // only administrators can access this module
   if (!user_access('administer site configuration')) {
     return message_access();
   }
+  
+  drupal_set_message(drupal_get_filename('module', 'smtp'));
+  
+  //Override the smtp_library variable.
+  if (variable_get('smtp_on', 0)) {
+    $smtp_path = drupal_get_filename('module', 'smtp');
+    if ($smtp_path){
+      variable_set('smtp_library', $smtp_path);
+      drupal_set_message(t('SMTP.module is active.'));
+    }
+    else {
+      drupal_set_message(t("SMTP.module error: Can't find file."), 'error');
+    }
+  }
+  else { //If smtp is turned off delete the variable.
+    variable_del('smtp_library');
+    drupal_set_message(t('SMTP.module is INACTIVE.'));
+  }
+  
   $form['onoff'] = array('#type' => 'fieldset', '#title' => t('Install options'));
   $form['onoff']['smtp_on'] = array(
     '#type' => 'radios',
@@ -83,12 +91,30 @@ function smtp_settings() {
     '#default_value' => variable_get('smtp_password', ''),
     '#description' => t('SMTP password.'));
     
-  $form['email_options'] = array('#type' => 'fieldset', '#title' => t('eMail options'));
+  $form['email_options'] = array('#type' => 'fieldset', '#title' => t('E-mail options'));
   $form['email_options']['smtp_fromname'] = array(
     '#type' => 'textfield',
-    '#title' => t('eMail from Name'),
+    '#title' => t('E-mail from Name'),
     '#default_value' => variable_get('smtp_fromname', ''),
     '#description' => t('The name that all emails will be from. If left blank will use the site name of: ') . variable_get('site_name', 'Drupal powered site'));
+    
+  //If an address was given, send a test email message.
+  $test_address = variable_get('smtp_test_address', '');
+  if ($test_address != ''){
+    variable_del('smtp_test_address'); //Clear the variable so only one message is sent.
+    user_mail($test_address, t('Drupal test email'), t('This is a test email.'), 'From: ' . variable_get('site_mail', 'test@example.com'));
+    drupal_set_message(t('A test E-mail has been sent to %email. You may want to %check for any error messages.', array('%email' => $test_address, '%check' => l(t('check the logs'), 'admin/logs'))));
+  }
+    
+    
+    
+    
+  $form['email_test'] = array('#type' => 'fieldset', '#title' => t('Send test E-mail'));
+  $form['email_test']['smtp_test_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('E-mail address to send test email too'),
+    '#default_value' => '',
+    '#description' => t('Type in an address to have a test email sent there.'));
     
   return $form;
 }
@@ -144,6 +170,7 @@ function user_mail_wrapper($to, $subject, $message, $header) {
 	$mail->Subject = $subject;
 	$mail->Body = $message;
 
+	//Try to send email, if it fails set watchdog entry.
 	if(!$mail->Send()) {
 		watchdog("error", "Error sending email: " . $mail->ErrorInfo . " From: $from To: $to");
 		return false;
