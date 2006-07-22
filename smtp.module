@@ -5,12 +5,15 @@
  * @file
  * Enables drupal to send email directly to an SMTP server using authentication.
  * Uses the PHPMailer class by Brent R. Matzelle.
+ * 
+ * Overriding mail handling in drupal requires setting the smtp_library variable with the
+ * filename of a file containing a user_mail_wrapper() function.
+ * This module sets the smtp_library value to point back to this file which contains the
+ * user_mail_wrapper() function that uses the PHPMailer to send email instead of the
+ * PHP mail() class.
  *
  * @link http://phpmailer.sourceforge.net
  */
-
-
-
 
 /**
  * Implementation of hook_help().
@@ -33,9 +36,7 @@ function smtp_settings() {
   if (!user_access('administer site configuration')) {
     return message_access();
   }
-  
-  drupal_set_message(drupal_get_filename('module', 'smtp'));
-  
+
   //Override the smtp_library variable.
   if (variable_get('smtp_on', 0)) {
     $smtp_path = drupal_get_filename('module', 'smtp');
@@ -43,7 +44,7 @@ function smtp_settings() {
       variable_set('smtp_library', $smtp_path);
       drupal_set_message(t('SMTP.module is active.'));
     }
-    else {
+    else { //If drupal can't find the path to the module.
       drupal_set_message(t("SMTP.module error: Can't find file."), 'error');
     }
   }
@@ -102,13 +103,10 @@ function smtp_settings() {
   $test_address = variable_get('smtp_test_address', '');
   if ($test_address != ''){
     variable_del('smtp_test_address'); //Clear the variable so only one message is sent.
-    user_mail($test_address, t('Drupal test email'), t('This is a test email.'), 'From: ' . variable_get('site_mail', 'test@example.com'));
+    user_mail($test_address, t('Drupal test email'), t('If you receive this message it means your site is capable of sending email.'), 'From: ' . variable_get('site_mail', 'test@example.com'));
     drupal_set_message(t('A test E-mail has been sent to %email. You may want to %check for any error messages.', array('%email' => $test_address, '%check' => l(t('check the logs'), 'admin/logs'))));
   }
-    
-    
-    
-    
+
   $form['email_test'] = array('#type' => 'fieldset', '#title' => t('Send test E-mail'));
   $form['email_test']['smtp_test_address'] = array(
     '#type' => 'textfield',
@@ -135,24 +133,42 @@ function user_mail_wrapper($to, $subject, $message, $header) {
 	$mail = new phpmailer(); //Create a new phpmailer object.
 	$username = variable_get('smtp_username', '');
 	$password = variable_get('smtp_password', '');
-	//Figure out what name the email should be from.
-	if (variable_get('smtp_fromname', '') != '') {
-	  $from_name = variable_get('smtp_fromname', '');
-	} else {
-	  $from_name = variable_get('site_name', 'Drupal powered site');
+	
+	//Set the default name emails should be from. If value is not defined in settings use site_name.
+	if (variable_get('smtp_fromname', '') != ''){
+    $from_name = variable_get('smtp_fromname', '');
 	}
+	else{
+	  $from_name = variable_get('site_name', '');
+	}
+
 	//Decide whether to use SMTP Authorization. Do so if username and password are given.
 	if ($username != '' and $password != '') {
 	  $auth = TRUE;
 	} else {
 	  $auth = FALSE;
 	}
+	
 	//Deal with the headers and extract the From address.
 	$header_array = explode("\n", $header); //Adds each line of the header as an array element.
 	foreach ($header_array as $header_line) {
-	  $mail->AddCustomHeader($header_line);
-	  if (strstr($header_line, 'From: ')) { //If the header line is the "From: " line then set the $from address.
-	    $from = str_replace('From: ', '', $header_line);
+	  //If the header line is the "From: " line then set the $from address.
+	  if (strstr($header_line, 'From: ')) {
+	    $regexp="/^From: (.*) <([a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,})>$/i";
+	    if (preg_match($regexp, $header_line, $matches) ){//If true the header_line should lool like From: "some name" <user@example.com>
+	      $from_name = $matches[1];
+	      $from = $matches[2]; //Raw email address.
+	    }
+	    else {
+	      //The header_line should look like From: user@example.com
+	      $from = str_replace('From: ', '', $header_line);
+	    }
+	  }
+	  elseif (preg_match("/^Content-Type: text\/html/i", $header_line)){ //If header_line is trying to set Content-Type: text/html
+	    $mail->IsHTML(TRUE);
+	  }
+	  else { //If header_line doesn't match anything then just add it the way it is.
+	    $mail->AddCustomHeader($header_line);
 	  }
 	}
 	
