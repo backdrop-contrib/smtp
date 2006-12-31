@@ -16,13 +16,21 @@
  */
 
 /**
- * Implementation of hook_help().
+ * Implementation of hook_menu().
  */
-function smtp_help($section) {
-  switch ($section) {
-    case 'admin/modules#description':
-      return t('Allows the sending of site email to an SMTP server.');
+function smtp_menu($may_cache) {
+  $items = array();
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/settings/smtp',
+      'title' => t('SMTP support'),
+      'description' => t('Allows the sending of site email to an SMTP server of your choice.'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => 'smtp_admin_settings',
+      'type' => MENU_NORMAL_ITEM,
+    );
   }
+  return $items;
 }
 
 /**
@@ -31,7 +39,7 @@ function smtp_help($section) {
  * @return
  *   An array containing form items to place on the module settings page.
  */
-function smtp_settings() {
+function smtp_admin_settings() {
   // only administrators can access this module
   if (!user_access('administer site configuration')) {
     return message_access();
@@ -103,8 +111,8 @@ function smtp_settings() {
   $test_address = variable_get('smtp_test_address', '');
   if ($test_address != ''){
     variable_del('smtp_test_address'); //Clear the variable so only one message is sent.
-    user_mail($test_address, t('Drupal test email'), t('If you receive this message it means your site is capable of sending email.'), 'From: ' . variable_get('site_mail', 'test@example.com'));
-    drupal_set_message(t('A test E-mail has been sent to %email. You may want to %check for any error messages.', array('%email' => $test_address, '%check' => l(t('check the logs'), 'admin/logs'))));
+    drupal_mail($test_address, t('Drupal test email'), t('If you receive this message it means your site is capable of sending email.'), 'From: ' . variable_get('site_mail', 'test@example.com'));
+    drupal_set_message(t('A test E-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => l(t('check the logs'), 'admin/logs/watchdog'))));
   }
 
   $form['email_test'] = array('#type' => 'fieldset', '#title' => t('Send test E-mail'));
@@ -114,7 +122,7 @@ function smtp_settings() {
     '#default_value' => '',
     '#description' => t('Type in an address to have a test email sent there.'));
     
-  return $form;
+  return system_settings_form($form);
 }
 
 /**
@@ -129,7 +137,7 @@ function smtp_settings() {
  * @param $header
  *   string of header lines seperated by "\n".
  */
-function user_mail_wrapper($to, $subject, $message, $header) {
+function drupal_mail_wrapper($to, $subject, $message, $header) {
 	$mail = new phpmailer(); //Create a new phpmailer object.
 	$username = variable_get('smtp_username', '');
 	$password = variable_get('smtp_password', '');

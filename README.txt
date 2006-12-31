@@ -1,6 +1,6 @@
 // $Id$
 
-SMTP MODULE for DRUPAL 4.7
+SMTP MODULE for DRUPAL 5.0
 -----
 
 This module adds SMTP functionality to Drupal.

@@ -3,11 +3,11 @@
 INSTALL INSTRUCTIONS FOR SMTP.MODULE
 ----
 
-1. Copy smtp.module to your Drupal modules/ folder.
+1. Copy smtp.module and smtp.info files to your Drupal modules/ folder.
 2. Login at site administrator.
 3. Activate smtp.module on the administer->modules page.
-4. Fill in required settings on the administer->settings->smtp page.
+4. Fill in required settings on the administer->Site configuration->SMTP support page.
 5. Enjoy.
 
 Notes:
-This version of the module is designed for DRUPAL 4.7 only.
+This version of the module is designed for DRUPAL 5.0 only.
