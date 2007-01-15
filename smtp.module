@@ -111,7 +111,7 @@ function smtp_admin_settings() {
   $test_address = variable_get('smtp_test_address', '');
   if ($test_address != ''){
     variable_del('smtp_test_address'); //Clear the variable so only one message is sent.
-    drupal_mail($test_address, t('Drupal test email'), t('If you receive this message it means your site is capable of sending email.'), 'From: ' . variable_get('site_mail', 'test@example.com'));
+    drupal_mail('smtp-test', $test_address, t('Drupal test email'), t('If you receive this message it means your site is capable of sending email.'), variable_get('site_mail', ini_get('sendmail_from')));
     drupal_set_message(t('A test E-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => l(t('check the logs'), 'admin/logs/watchdog'))));
   }
 
@@ -128,16 +128,18 @@ function smtp_admin_settings() {
 /**
  * Sends out the email.
  *
+ * @param $mailkey
+ *   A key to identify the mail sent, for altering.
  * @param $to
  *   string email address to send to.
  * @param $subject
  *   string subject of email.
- * @param $message
+ * @param $body
  *   string body of message.
  * @param $header
  *   string of header lines seperated by "\n".
  */
-function drupal_mail_wrapper($to, $subject, $message, $header) {
+function drupal_mail_wrapper($mailkey, $to, $subject, $body, $drupal_from, $header) {
 	$mail = new phpmailer(); //Create a new phpmailer object.
 	$username = variable_get('smtp_username', '');
 	$password = variable_get('smtp_password', '');
@@ -179,6 +181,14 @@ function drupal_mail_wrapper($to, $subject, $message, $header) {
 	    $mail->AddCustomHeader($header_line);
 	  }
 	}
+	//If a from name has been given use it.
+	if($drupal_from != ""){
+	  $from = $drupal_from;
+	}
+	//Make sure from is not empty.
+	if($from == "" or $from == NULL){
+	  $from = 'test@example.com';
+	}
 	
 	$mail->Host = variable_get('smtp_host', '') . ';' . variable_get('smtp_hostbackup', '');
 	$mail->Port = variable_get('smtp_port', '25');
@@ -192,11 +202,11 @@ function drupal_mail_wrapper($to, $subject, $message, $header) {
 	$mail->FromName = $from_name;
 	$mail->AddAddress($to);
 	$mail->Subject = $subject;
-	$mail->Body = $message;
+	$mail->Body = $body;
 
 	//Try to send email, if it fails set watchdog entry.
 	if(!$mail->Send()) {
-		watchdog("error", "Error sending email: " . $mail->ErrorInfo . " From: $from To: $to");
+		watchdog("error", "Error sending email: \"" . $mail->ErrorInfo . "\" From: \"$from\" To: \"$to\"");
 		return false;
 	}
 	
