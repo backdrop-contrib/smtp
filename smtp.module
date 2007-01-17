@@ -82,11 +82,22 @@ function smtp_admin_settings() {
     '#description' => t('The address of your outgoing SMTP backup server. If the primary server can\'t be found this one will be tried. This is optional.'));
   $form['server']['smtp_port'] = array(
     '#type' => 'textfield',
-    '#title' => t('SMTP Server Port'),
-    '#size' => 5,
-    '#maxlength' => 5,
+    '#title' => t('SMTP port'),
+    '#size' => 4,
+    '#maxlength' => 4,
     '#default_value' => variable_get('smtp_port', '25'),
-    '#description' => t('SMTP server port to use.'));
+    '#description' => t('The default SMTP port is 25, if that is being blocked try 80. Gmail uses 465.'));
+  if (function_exists('openssl_open')){ //Only display the option if openssl is installed.
+    $form['server']['smtp_protocol'] = array(
+      '#type' => 'select',
+      '#title' => t('Use encrypted protocol'),
+      '#default_value' => variable_get('smtp_protocol', 'standard'),
+      '#options' => array('standard' => t('No'), 'ssl' => t('Use SSL'), 'tls' => t('Use TLS')),
+      '#description' => t('This allows connection to an SMTP server that requires SSL encryption such as gmail.'));
+  }
+  else{ //If openssl is not installed use normal protocol.
+    variable_set('smtp_protocol', 'standard');
+  }
   
   $form['auth'] = array('#type' => 'fieldset', '#title' => t('SMTP Authentication'), '#description' => t('Leave blank if your SMTP server does not require authentication.'));
   $form['auth']['smtp_username'] = array(
@@ -190,6 +201,18 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $drupal_from, $head
 	  $from = 'test@example.com';
 	}
 	
+	//Set the correct protocol prefix to append to the smtp host.
+	switch(variable_get('smtp_protocol', 'standard')){
+	  case "ssl":
+	    $mail->Protocol = 'ssl://';
+	    break;
+	  case "tls":
+	    $mail->Protocol = 'tls://';
+	    break;
+	  case "standard":
+	    $mail->Protocol = '';
+	}
+	
 	$mail->Host = variable_get('smtp_host', '') . ';' . variable_get('smtp_hostbackup', '');
 	$mail->Port = variable_get('smtp_port', '25');
 	$mail->Mailer = "smtp";
@@ -244,6 +267,11 @@ function _smtp_initialize_language(){
  * Commented out line "include_once($this->PluginDir . "class.smtp.php");" from function SmtpSend().
  * Commented out everything in function SetLanguage() except "$this->language = $PHPMAILER_LANG; return TRUE".
  * Changed line "$this->language = $PHPMAILER_LANG;" to "$this->language = _smtp_initialize_language();"
+ * Changed line "while($str = fgets($this->smtp_conn,515)) {" to "while($str = @fgets($this->smtp_conn,515)) {"
+ * Changed line "$this->smtp_conn = fsockopen($host,    # the host of the server" to "$this->smtp_conn = fsockopen($this->protocol . $host,    # the host of the server"
+ * Added "var $protocol = '';" to the smtp class variables.
+ * After line "if($this->smtp == NULL) { $this->smtp = new SMTP(); }" Added "$this->smtp->protocol = $this->Protocol;"
+ * Added "var $Protocol = '';" to the PHPMailer class variables.
  **************************************************************************************************/
 
 
@@ -270,6 +298,8 @@ class PHPMailer
     /////////////////////////////////////////////////
     // PUBLIC VARIABLES
     /////////////////////////////////////////////////
+    
+    var $Protocol = ''; //Custom variable added for ssl support.
 
     /**
      * Email priority (1 = High, 3 = Normal, 5 = low).
@@ -773,6 +803,8 @@ class PHPMailer
      */
     function SmtpConnect() {
         if($this->smtp == NULL) { $this->smtp = new SMTP(); }
+        
+        $this->smtp->protocol = $this->Protocol; //Custom line added for ssl support.
 
         $this->smtp->do_debug = $this->SMTPDebug;
         $hosts = explode(";", $this->Host);
@@ -1770,6 +1802,7 @@ class PHPMailer
  */
 class SMTP
 {
+    var $protocol = '';
     /**
      *  SMTP server port
      *  @var int
@@ -1845,7 +1878,7 @@ class SMTP
         }
 
         #connect to the smtp server
-        $this->smtp_conn = fsockopen($host,    # the host of the server
+        $this->smtp_conn = fsockopen($this->protocol . $host,    # the host of the server
                                      $port,    # the port to use
                                      $errno,   # error number if any
                                      $errstr,  # error message if any
@@ -2768,7 +2801,7 @@ class SMTP
      */
     function get_lines() {
         $data = "";
-        while($str = fgets($this->smtp_conn,515)) {
+        while($str = @fgets($this->smtp_conn,515)) {
             if($this->do_debug >= 4) {
                 echo "SMTP -> get_lines(): \$data was \"$data\"" .
                          $this->CRLF;
