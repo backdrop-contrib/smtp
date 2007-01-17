@@ -150,10 +150,11 @@ function smtp_admin_settings() {
  * @param $header
  *   string of header lines seperated by "\n".
  */
-function drupal_mail_wrapper($mailkey, $to, $subject, $body, $drupal_from, $header) {
+function drupal_mail_wrapper($mailkey, $to, $subject, $body, $from, $header) {
 	$mail = new phpmailer(); //Create a new phpmailer object.
 	$username = variable_get('smtp_username', '');
 	$password = variable_get('smtp_password', '');
+	$header_from = '';
 	
 	//Set the default name emails should be from. If value is not defined in settings use site_name.
 	if (variable_get('smtp_fromname', '') != ''){
@@ -178,11 +179,11 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $drupal_from, $head
 	    $regexp="/^From: (.*) <([a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,})>$/i";
 	    if (preg_match($regexp, $header_line, $matches) ){//If true the header_line should lool like From: "some name" <user@example.com>
 	      $from_name = $matches[1];
-	      $from = $matches[2]; //Raw email address.
+	      $header_from = $matches[2]; //Raw email address.
 	    }
 	    else {
 	      //The header_line should look like From: user@example.com
-	      $from = str_replace('From: ', '', $header_line);
+	      $header_from = str_replace('From: ', '', $header_line);
 	    }
 	  }
 	  elseif (preg_match("/^Content-Type: text\/html/i", $header_line)){ //If header_line is trying to set Content-Type: text/html
@@ -192,13 +193,15 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $drupal_from, $head
 	    $mail->AddCustomHeader($header_line);
 	  }
 	}
-	//If a from name has been given use it.
-	if($drupal_from != ""){
-	  $from = $drupal_from;
-	}
-	//Make sure from is not empty.
-	if($from == "" or $from == NULL){
-	  $from = 'test@example.com';
+	
+	//Select a from email address to use.
+	if ($from == '' or $from == NULL){
+	  if ($header_from != ''){
+	    $from = $header_from; //Use the value parsed in the header.
+	  }
+	  else{
+	    $from = variable_get('site_mail', 'test@example.com'); //If no from can be found use site_mail variable.
+	  }
 	}
 	
 	//Set the correct protocol prefix to append to the smtp host.
