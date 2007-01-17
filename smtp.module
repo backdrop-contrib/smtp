@@ -171,8 +171,14 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $from, $header) {
 	  $auth = FALSE;
 	}
 	
+	//Adds each line of the header as an array element.
+	if (strpos($header, "\r\n")){ //Check if header is using \r\n
+	  $header_array = explode("\r\n", $header);
+	}
+	else{
+	  $header_array = explode("\n", $header);
+	}
 	//Deal with the headers and extract the From address.
-	$header_array = explode("\n", $header); //Adds each line of the header as an array element.
 	foreach ($header_array as $header_line) {
 	  //If the header line is the "From: " line then set the $from address.
 	  if (strstr($header_line, 'From: ')) {
