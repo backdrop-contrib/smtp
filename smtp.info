@@ -1,3 +1,4 @@
 ; $Id$
 name = SMTP
 description = Allows the sending of site email to an SMTP server.
+package = "Mail"
