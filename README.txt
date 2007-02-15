@@ -13,6 +13,9 @@ INSTALL INSTRUCTIONS
 
 Notes:
 
+This module sends email by connecting to an SMTP server.
+Therefore you need to have access to an SMTP server for this module to work.
+
 Drupal will often use the email address entered into "Administrator>Site configuration>E-mail address"
 as the from address. It is important for this to be the correct address and some ISPs will block email
 that comes from an invalid address.
@@ -20,8 +23,10 @@ that comes from an invalid address.
 Because this module includes PHPMailer it is rather large and may cause PHP to run out of memory if
 its memory limit is small.
 
+Connecting to an SMTP server using SSL is possible only if PHP's openssl extension is working.
+If the SMTP module detects openssl is available it will display the options in the modules settings page.
+
+Sending mail to gmail requires SSL or TLS.
 
 This module uses the smtp and mail class's from PHPMailer.
 http://phpmailer.sourceforge.net
-
-Please send comments to luke {at} lukelast [.] com
