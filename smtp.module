@@ -154,7 +154,6 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $from, $header) {
 	$mail = new phpmailer(); //Create a new phpmailer object.
 	$username = variable_get('smtp_username', '');
 	$password = variable_get('smtp_password', '');
-	$header_from = '';
 	
 	//Set the default name emails should be from. If value is not defined in settings use site_name.
 	if (variable_get('smtp_fromname', '') != ''){
@@ -171,45 +170,28 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $from, $header) {
 	  $auth = FALSE;
 	}
 	
-	//Adds each line of the header as an array element.
-	if (strpos($header, "\r\n")){ //Check if header is using \r\n
-	  $header_array = explode("\r\n", $header);
-	}
-	else{
-	  $header_array = explode("\n", $header);
-	}
-	//Deal with the headers and extract the From address.
-	foreach ($header_array as $header_line) {
-	  //If the header line is the "From: " line then set the $from address.
-	  if (strstr($header_line, 'From: ')) {
-	    $regexp="/^From: (.*) <([a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,})>$/i";
-	    if (preg_match($regexp, $header_line, $matches) ){//If true the header_line should lool like From: "some name" <user@example.com>
-	      $from_name = $matches[1];
-	      $header_from = $matches[2]; //Raw email address.
-	    }
-	    else {
-	      //The header_line should look like From: user@example.com
-	      $header_from = str_replace('From: ', '', $header_line);
-	    }
-	  }
-	  elseif (preg_match("/^Content-Type: text\/html/i", $header_line)){ //If header_line is trying to set Content-Type: text/html
-	    $mail->IsHTML(TRUE);
-	  }
-	  else { //If header_line doesn't match anything then just add it the way it is.
-	    $mail->AddCustomHeader($header_line);
-	  }
-	}
 	
-	//Select a from email address to use.
+	//Take care of the email headers.
+  foreach ($header as $key => $value) {
+    //watchdog('error', 'Key: ' . $key . ' Value: ' . $value);
+    if (strtolower($key) == 'from') {
+      if ($from == NULL or $from == '') {
+        $from = $value; //If a from value was already given then set based on header.
+      }
+    }
+    else if (strtolower($key) == 'content-type' and strtolower($value) == 'text/html') {
+      $mail->IsHTML(TRUE);
+    }
+    else { //Else the header key is not special, just add it.
+      $mail->AddCustomHeader($key . ": " . $value); //Add header line.
+    }
+  }
+
+	//If no from address has been set than use a default.
 	if ($from == '' or $from == NULL){
-	  if ($header_from != ''){
-	    $from = $header_from; //Use the value parsed in the header.
-	  }
-	  else{
-	    $from = variable_get('site_mail', 'test@example.com'); //If no from can be found use site_mail variable.
-	  }
+    $from = variable_get('site_mail', 'test@example.com'); //If no from can be found use site_mail variable.
 	}
-	
+
 	//Set the correct protocol prefix to append to the smtp host.
 	switch(variable_get('smtp_protocol', 'standard')){
 	  case "ssl":
@@ -235,6 +217,8 @@ function drupal_mail_wrapper($mailkey, $to, $subject, $body, $from, $header) {
 	$mail->AddAddress($to);
 	$mail->Subject = $subject;
 	$mail->Body = $body;
+	
+	watchdog("error", "About to send email to: " . $to);
 
 	//Try to send email, if it fails set watchdog entry.
 	if(!$mail->Send()) {
