@@ -1,0 +1,4 @@
+// $Id$
+
+2008-07-03 Jason Flatt drupal@oadaeh.net
+  * smtp.module: Began the upgrade process to Drupal 6.x compatibility.
