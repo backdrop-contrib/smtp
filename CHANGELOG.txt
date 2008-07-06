@@ -1,4 +1,13 @@
 // $Id$
 
+2008-07-06 Jason Flatt drupal@oadaeh.net
+  * smtp.module: Continued upgrade process to Drupal 6.x compatibility.
+    Tweaked the inline comments and documentation.
+    Removed _smtp_initialize_language().
+
+2008-07-04 Jason Flatt drupal@oadaeh.net
+  * smtp.module: Continued upgrade process to Drupal 6.x compatibility.
+    Added $mail->ContentType = 'multipart/mixed';
+
 2008-07-03 Jason Flatt drupal@oadaeh.net
   * smtp.module: Began the upgrade process to Drupal 6.x compatibility.

@@ -5,8 +5,8 @@
  * @file
  * Enables Drupal to send e-mail directly to an SMTP server.
  *
- * This module uses the PHPMailer class, originally by Brent R. Matzelle, and
- * now maintained by Codeworx Tech.
+ * This module uses the PHPMailer class, originally by Brent R. Matzelle, now
+ * maintained by Codeworx Tech.
  *
  * Overriding mail handling in Drupal requires setting the smtp_library
  * variable with the filename of a file containing a drupal_mail_wrapper()
@@ -40,7 +40,6 @@ function smtp_menu() {
     'page arguments'   => array('smtp_admin_settings'),
     'access arguments' => array('administer site configuration'),
     'description'      => 'Allows the sending of site e-mail through an SMTP server of your choice.',
-//    'type' => MENU_NORMAL_ITEM,
   );
 
   return $items;
@@ -62,11 +61,13 @@ function smtp_admin_settings() {
       variable_set('smtp_library', $smtp_path);
       drupal_set_message(t('SMTP.module is active.'));
     }
-    else { //If drupal can't find the path to the module.
+    // If drupal can't find the path to the module, display an error.
+    else {
       drupal_set_message(t("SMTP.module error: Can't find file."), 'error');
     }
   }
-  else { //If smtp is turned off delete the variable.
+  // If this module is turned off, delete the variable.
+  else {
     variable_del('smtp_library');
     drupal_set_message(t('SMTP.module is INACTIVE.'));
   }
@@ -116,7 +117,7 @@ function smtp_admin_settings() {
     );
     $encryption_description = t('This allows connection to an SMTP server that requires SSL encryption such as Gmail.');
   }
-  // If openssl is not installed use normal protocol.
+  // If openssl is not installed, use normal protocol.
   else {
     variable_set('smtp_protocol', 'standard');
     $encryption_options = array('standard' => t('No'));
@@ -221,7 +222,6 @@ function smtp_admin_settings_validate($form, &$form_state) {
  *
  * @see http://api.drupal.org/api/function/drupal_mail_send/6
  */
-//function drupal_mail_wrapper($mailkey, $to, $subject, $body, $from, $header) {
 function drupal_mail_wrapper($message) {
   $id      = $message['id'];
   $to      = $message['to'];
@@ -230,13 +230,16 @@ function drupal_mail_wrapper($message) {
   $subject = $message['subject'];
   $body    = $message['body'];
 
+  // Include the PHPMailer class (which includes the SMTP class).
   require_once(drupal_get_path('module', 'smtp') .'/phpmailer/class.phpmailer.php');
+
   // Create a new PHPMailer object.
   $mail = new PHPMailer();
   $username = variable_get('smtp_username', '');
   $password = variable_get('smtp_password', '');
 
-  // Set the default name e-mails should be from. If value is not defined in settings use site_name.
+  // Set the default name e-mails should be from.
+  // If value is not defined in settings, use site_name.
   if (variable_get('smtp_fromname', '') != '') {
     $from_name = variable_get('smtp_fromname', '');
   }
@@ -245,13 +248,13 @@ function drupal_mail_wrapper($message) {
     $from_name = variable_get('site_name', '');
   }
 
-  // If from e-mail address is blank use smtp_from config option.
+  // If from e-mail address is blank, use smtp_from config option.
   if ($from == NULL || $from == '') {
     if (variable_get('smtp_from', '') != '') {
       $from = variable_get('smtp_from', '');
     }
     else {
-      // If smtp_from config option is blank use site_email.
+      // If smtp_from config option is blank, use site_email.
       $from = variable_get('site_email', '');
     }
   }
@@ -260,30 +263,35 @@ function drupal_mail_wrapper($message) {
 //  $from_name = preg_replace("/\"(.*)\"(.*)/i", "$1", $from); // It gives: Name
 //  $from      = preg_replace("/(.*)\<(.*)\>/i", "$2", $from); // It gives: name@domain.tld
 
-  // Defines the From value to what we expect
+  // Defines the From value to what we expect.
   $mail->From     = '"'. $from_name .'" <'. $from .'>';
   $mail->FromName = $from_name;
   $mail->Sender   = $from;
 
-  //Decide whether to use SMTP Authorization. Do so if username and password are given.
+  // Decide whether to use SMTP Authorization.
   if ($username != '' and $password != '') {
+    // Do so if username and password are given.
     $auth = TRUE;
   }
   else {
     $auth = FALSE;
   }
 
+  // Force the initial value to be set to text/plain.
+  $mail->IsHTML(FALSE);
 
-  //Take care of the e-mail headers.
+  // Take care of the e-mail headers.
   foreach ($header as $key => $value) {
     //watchdog('error', 'Key: ' . $key . ' Value: ' . $value);
     if (drupal_strtolower($key) == 'from') {
       if ($from == NULL or $from == '') {
-        // If a from value was already given then set based on header.
-        // Should be the most common situation since drupal_mail moves the from to headers
+        // If a from value was already given, then set based on header.
+        // Should be the most common situation since drupal_mail moves the
+        // from to headers.
         $from           = $value;
         $mail->From     = $value;
-        $mail->FromName = ''; // then from can be out of sync with from_name !
+        // then from can be out of sync with from_name !
+        $mail->FromName = '';
         $mail->Sender   = $value;
       }
     }
@@ -291,9 +299,11 @@ function drupal_mail_wrapper($message) {
       $mail->IsHTML(TRUE);
     }
     else if (drupal_strtolower($key) == 'content-type' && strpos(drupal_strtolower($value), 'multipart/mixed') !== FALSE) {
-      //$body passed to smtp should already be formatted. add multipart header and tell phpmailer to leave it alone
+      // $body passed to smtp should already be formatted. Add multipart
+      // header and tell phpmailer to leave it alone
       $mail->AddCustomHeader($key .': '. $value);
       $mail->message_type = "pre";
+      $mail->ContentType = 'multipart/mixed';
     }
     else if (drupal_strtolower($key) == 'reply-to') {
       // Only add a "reply-to" if it's not the same as "return-path".
@@ -311,10 +321,10 @@ function drupal_mail_wrapper($message) {
       $mail->Encoding = $value;
     }
     else if (drupal_strtolower($key) == 'mime-version') {
-      // Ommit MIME-Version it since it will be set by PHPMailer.
+      // Ommit MIME-Version, since it will be set by PHPMailer.
     }
     else if (drupal_strtolower($key) == 'x-mailer') {
-      // Ommit X-Mailer it since it will be set by PHPMailer.
+      // Ommit X-Mailer, since it will be set by PHPMailer.
     }
     else if (drupal_strtolower($key) == 'errors-to') {
       // Prefer to keep control on this one, it will be set by PHPMailer.
@@ -334,13 +344,15 @@ function drupal_mail_wrapper($message) {
         $mail->AddBCC($bccaddr, $bccname);
       }
     }
-    else { //Else the header key is not special, just add it.
-      $mail->AddCustomHeader($key .': '. $value); //Add header line.
+    // Else the header key is not special.
+    else {
+      // Add header line.
+      $mail->AddCustomHeader($key .': '. $value);
     }
   }
 
 
-  //Set the correct protocol prefix to append to the smtp host.
+  // Set the correct protocol prefix to append to the smtp host.
   switch (variable_get('smtp_protocol', 'standard')) {
     case "ssl":
       $mail->Protocol = 'ssl://';
@@ -380,7 +392,7 @@ function drupal_mail_wrapper($message) {
 
   watchdog('smtp', 'Sending mail to: !to', array('!to' => $to));
 
-  // Try to send e-mail, if it fails set watchdog entry.
+  // Try to send e-mail. If it fails, set watchdog entry.
   if (!$mail->Send()) {
     watchdog("smtp", 'Error sending e-mail from !from to !to: '. $mail->ErrorInfo, array('!from' => $from, '!to' => $to), WATCHDOG_ERROR);
     return false;
@@ -401,40 +413,3 @@ function smtp_mail($key, &$message, $params) {
     $message['body']    = $params['body'];
   }
 }  //  End of smtp_mail().
-
-
-
-/**
- * PHPMailer language settings.
- * English Version
- * Pulled from phpmailer.lang-en.php and t() functions added for drupal translations.
- * This function is called in the line "$this->language = _smtp_initialize_language();" around line 794.
- * /
-function _smtp_initialize_language() {
-  $PHPMAILER_LANG = array();
-  $PHPMAILER_LANG["provide_address"] = t('You must provide at least one recipient e-mail address.');
-  $PHPMAILER_LANG["mailer_not_supported"] = ' ' . t('mailer is not supported.');
-  $PHPMAILER_LANG["execute"] = t('Could not execute:') . ' ';
-  $PHPMAILER_LANG["instantiate"] = t('Could not instantiate mail function.');
-  $PHPMAILER_LANG["authenticate"] = t('SMTP Error: Could not authenticate.');
-  $PHPMAILER_LANG["from_failed"] = t('The following From address failed:') . ' ';
-  $PHPMAILER_LANG["recipients_failed"] = t('SMTP Error: The following recipients failed:') . ' ';
-  $PHPMAILER_LANG["data_not_accepted"] = t('SMTP Error: Data not accepted.');
-  $PHPMAILER_LANG["connect_host"] = t('SMTP Error: Could not connect to SMTP host.');
-  $PHPMAILER_LANG["file_access"] = t('Could not access file:') . ' ';
-  $PHPMAILER_LANG["file_open"] = t('File Error: Could not open file:') . ' ';
-  $PHPMAILER_LANG["encoding"] = t('Unknown encoding:') . ' ';
-  return $PHPMAILER_LANG;
-}
-
-/* *************************************************************************************************
- * Changes to the PHPMailer class's are as follows.
- * Commented out everything in function SetLanguage() except "$this->language = $PHPMAILER_LANG; return TRUE".
- * Changed line "$this->language = $PHPMAILER_LANG;" to "$this->language = _smtp_initialize_language();"
- * Changed line "while($str = fgets($this->smtp_conn,515)) {" to "while($str = @fgets($this->smtp_conn,515)) {"
- * Changed line "$this->smtp_conn = fsockopen($host,    # the host of the server" to "$this->smtp_conn = fsockopen($this->protocol . $host,    # the host of the server"
- * Added "var $protocol = '';" to the smtp class variables.
- * After line "if($this->smtp == NULL) { $this->smtp = new SMTP(); }" Added "$this->smtp->protocol = $this->Protocol;"
- * Added "var $Protocol = '';" to the PHPMailer class variables.
- * Added "pre" message_type to allow pass-through of pre-formated $body
- * *************************************************************************************************/

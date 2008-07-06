@@ -1,13 +1,17 @@
 // $Id$
 
-INSTALL INSTRUCTIONS FOR SMTP.MODULE
-----
+NOTE: See the REQUIREMENTS in the README.txt file.
 
-1. Copy smtp.module and smtp.info files to your Drupal modules/ folder.
-2. Login at site administrator.
-3. Activate smtp.module on the administer->modules page.
-4. Fill in required settings on the administer->Site configuration->SMTP support page.
-5. Enjoy.
-
-Notes:
-This version of the module is designed for DRUPAL 5.0 only.
+INSTALLATION INSTRUCTIONS
+-------------------------
+1.  Copy the files included in the tarball into a directory named "smtp" in
+    your Drupal sites/all/modules/ directory.
+2.  Download the PHPMailer package (the URL is listed in REQUIREMENTS section
+    of the README.txt file) and place it in a directory named "phpmailer" in
+    your <drupal-root>/sites/all/modules/smtp directory.
+3.  Login as site administrator.
+4.  Enable the SMTP Authentication Support module on the Administer -> Site
+    building -> Modules page.
+5.  Fill in required settings on the Administer -> Site configuration -> SMTP
+    Authentication Support page.
+6.  Enjoy.
