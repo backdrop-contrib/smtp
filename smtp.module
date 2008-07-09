@@ -355,13 +355,13 @@ function drupal_mail_wrapper($message) {
   // Set the correct protocol prefix to append to the smtp host.
   switch (variable_get('smtp_protocol', 'standard')) {
     case "ssl":
-      $mail->Protocol = 'ssl://';
+      $mail->SMTPSecure = 'ssl';
       break;
     case "tls":
-      $mail->Protocol = 'tls://';
+      $mail->SMTPSecure = 'tls';
       break;
     case "standard":
-      $mail->Protocol = '';
+      $mail->SMTPSecure = '';
   }
 
   $mail->Host = variable_get('smtp_host', '') .';'. variable_get('smtp_hostbackup', '');
