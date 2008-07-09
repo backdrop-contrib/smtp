@@ -3,6 +3,7 @@
 2008-07-09 Jason Flatt drupal@oadaeh.net
   * smtp.module: Changed the encryption protocol variable name from
     $mail->Protocol to $mail->SMTPSecure.
+    Added an administrative option for enabling debugging.
 
 2008-07-06 Jason Flatt drupal@oadaeh.net
   * smtp.module: Continued upgrade process to Drupal 6.x compatibility.

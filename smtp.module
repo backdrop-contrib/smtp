@@ -188,6 +188,13 @@ function smtp_admin_settings() {
     '#description'   => t('Type in an address to have a test e-mail sent there.'),
   );
 
+  $form['smtp_debugging'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Enable debugging'),
+    '#default_value' => variable_get('smtp_debugging', 0),
+    '#description'   => t('Checking this box will print SMTP messages from the server for every e-mail that is sent.'),
+  );
+
   return system_settings_form($form);
 }  //  End of smtp_admin_settings().
 
@@ -235,6 +242,9 @@ function drupal_mail_wrapper($message) {
 
   // Create a new PHPMailer object.
   $mail = new PHPMailer();
+  if (variable_get('smtp_debugging', 0) == 1) {
+    $mail->SMTPDebug = TRUE;
+  }
   $username = variable_get('smtp_username', '');
   $password = variable_get('smtp_password', '');
 
