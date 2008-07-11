@@ -1,9 +1,15 @@
 // $Id$
 
+2008-07-11 Jason Flatt drupal@oadaeh.net
+  * smtp.module: Made the "On" and "Off" radio options translatable, per
+    rastatt@drupal.org in http://drupal.org/node/262455#comment-917055.
+
 2008-07-09 Jason Flatt drupal@oadaeh.net
   * smtp.module: Changed the encryption protocol variable name from
-    $mail->Protocol to $mail->SMTPSecure.
-    Added an administrative option for enabling debugging.
+    $mail->Protocol to $mail->SMTPSecure, per root_of_roots in
+    http://drupal.org/node/280081.
+    Added an administrative option for enabling debugging, per dennys in
+    http://drupal.org/node/199843.
 
 2008-07-06 Jason Flatt drupal@oadaeh.net
   * smtp.module: Continued upgrade process to Drupal 6.x compatibility.
