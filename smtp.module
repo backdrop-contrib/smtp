@@ -269,9 +269,8 @@ function drupal_mail_wrapper($message) {
     }
   }
 
-/** TODO: Check to see if the following will help or not */
-//  $from_name = preg_replace("/\"(.*)\"(.*)/i", "$1", $from); // It gives: Name
-//  $from      = preg_replace("/(.*)\<(.*)\>/i", "$2", $from); // It gives: name@domain.tld
+  $from_name = preg_replace("/\"(.*)\"(.*)/i", "$1", $from); // It gives: Name
+  $from      = preg_replace("/(.*)\<(.*)\>/i", "$2", $from); // It gives: name@domain.tld
 
   // Defines the From value to what we expect.
   $mail->From     = '"'. $from_name .'" <'. $from .'>';

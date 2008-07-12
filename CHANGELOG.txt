@@ -1,5 +1,9 @@
 // $Id$
 
+2008-07-12 Jason Flatt drupal@oadaeh.net
+  * smtp.module: Uncommented two functions that set the from name and e-mail
+    address, per jcwatson11 in http://drupal.org/node/281599.
+
 2008-07-11 Jason Flatt drupal@oadaeh.net
   * smtp.module: Made the "On" and "Off" radio options translatable, per
     rastatt@drupal.org in http://drupal.org/node/262455#comment-917055.
