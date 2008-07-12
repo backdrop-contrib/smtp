@@ -399,11 +399,11 @@ function drupal_mail_wrapper($message) {
   $mail->Subject = $subject;
   $mail->Body = $body;
 
-  watchdog('smtp', 'Sending mail to: !to', array('!to' => $to));
+  watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
 
   // Try to send e-mail. If it fails, set watchdog entry.
   if (!$mail->Send()) {
-    watchdog("smtp", 'Error sending e-mail from !from to !to: '. $mail->ErrorInfo, array('!from' => $from, '!to' => $to), WATCHDOG_ERROR);
+    watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mail->ErrorInfo), WATCHDOG_ERROR);
     return false;
   }
 
