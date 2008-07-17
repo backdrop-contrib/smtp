@@ -1,5 +1,12 @@
 // $Id$
 
+2008-07-17 Jason Flatt drupal@oadaeh.net
+  * po: Changed to translations (http://drupal.org/node/262455).
+    translations/de.po: Added (http://drupal.org/node/262455).
+    Added e-mail address validation check for the settings page.
+    Added additional from e-mail address validation checking during the
+    processing of the e-mail message (http://drupal.org/node/281599).
+
 2008-07-12 Jason Flatt drupal@oadaeh.net
   * smtp.module: Uncommented two functions that set the from name and e-mail
     address, per jcwatson11 in http://drupal.org/node/281599.

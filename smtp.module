@@ -216,6 +216,10 @@ function smtp_admin_settings_validate($form, &$form_state) {
   if ($form_state['values']['smtp_on'] == 1 && $form_state['values']['smtp_port'] == '') {
     form_set_error('smtp_port', t('You must enter an SMTP port number.'));
   }
+
+  if ($form_state['values']['smtp_from'] && !valid_email_address($form_state['values']['smtp_from'])) {
+    form_set_error('smtp_from', t('The provided from e-mail address is not valid.'));
+  }
 }  //  End of smtp_admin_settings_validate().
 
 
@@ -242,9 +246,16 @@ function drupal_mail_wrapper($message) {
 
   // Create a new PHPMailer object.
   $mail = new PHPMailer();
+
+  global $language;
+  if ($language) {
+    $mail->SetLanguage($language->language, drupal_get_path('module', 'smtp') .'/phpmailer/language/');
+  }
+
   if (variable_get('smtp_debugging', 0) == 1) {
     $mail->SMTPDebug = TRUE;
   }
+
   $username = variable_get('smtp_username', '');
   $password = variable_get('smtp_password', '');
 
@@ -269,11 +280,21 @@ function drupal_mail_wrapper($message) {
     }
   }
 
-  $from_name = preg_replace("/\"(.*)\"(.*)/i", "$1", $from); // It gives: Name
-  $from      = preg_replace("/(.*)\<(.*)\>/i", "$2", $from); // It gives: name@domain.tld
+  if (preg_match('/^".*"\s*<.*>$/', $from)) {
+    $from_name = preg_replace('/"(.*)"(.*)/i',   '$1', $from); // It gives: Name
+    $from      = preg_replace("/(.*)\<(.*)\>/i", '$2', $from); // It gives: name@domain.tld
+  }
+  else if (!valid_email_address($from)) {
+    $from_error_message = t('The submitted from address (@from) is not valid.', array('@from' => $from));
+    drupal_set_message($from_error_message, 'error');
+    watchdog('smtp', $from_error_message, WATCHDOG_ERROR);
+    return false;
+  }
 
   // Defines the From value to what we expect.
-  $mail->From     = '"'. $from_name .'" <'. $from .'>';
+// This should be done correctly by PHPMailer now.
+//  $mail->From     = '"'. $from_name .'" <'. $from .'>';
+  $mail->From     = $from;
   $mail->FromName = $from_name;
   $mail->Sender   = $from;
 
