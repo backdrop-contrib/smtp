@@ -1,9 +1,5 @@
 <?php
-<<<<<<< smtp.module
 // $Id$
-=======
-// $Id$
->>>>>>> 1.17.2.18
 
 /**
  * @file
@@ -235,12 +231,6 @@ function smtp_admin_settings_validate($form, &$form_state) {
   if ($form_state['values']['smtp_on'] == 1 && $form_state['values']['smtp_port'] == '') {
     form_set_error('smtp_port', t('You must enter an SMTP port number.'));
   }
-<<<<<<< smtp.module
-
-  if ($form_state['values']['smtp_from'] && !valid_email_address($form_state['values']['smtp_from'])) {
-    form_set_error('smtp_from', t('The provided from e-mail address is not valid.'));
-  }
-=======
 
   if ($form_state['values']['smtp_from'] && !valid_email_address($form_state['values']['smtp_from'])) {
     form_set_error('smtp_from', t('The provided from e-mail address is not valid.'));
@@ -250,7 +240,6 @@ function smtp_admin_settings_validate($form, &$form_state) {
   if (empty($form_state['values']['smtp_password'])) {
     unset($form_state['values']['smtp_password']);
   }
->>>>>>> 1.17.2.18
 }  //  End of smtp_admin_settings_validate().
 
 
@@ -278,22 +267,6 @@ function smtp_drupal_mail_wrapper($message) {
 
   // Create a new PHPMailer object.
   $mail = new PHPMailer();
-<<<<<<< smtp.module
-
-  global $language;
-  if ($language) {
-    $mail->SetLanguage($language->language, drupal_get_path('module', 'smtp') .'/phpmailer/language/');
-  }
-
-  if (variable_get('smtp_debugging', 0) == 1) {
-    $mail->SMTPDebug = TRUE;
-  }
-
-  $username = variable_get('smtp_username', '');
-  $password = variable_get('smtp_password', '');
-=======
->>>>>>> 1.17.2.18
-
 
   // Set the language PHPMailer is to use.
   if (!$language) {
@@ -354,19 +327,6 @@ function smtp_drupal_mail_wrapper($message) {
       $from = variable_get('site_email', '');
     }
   }
-<<<<<<< smtp.module
-
-  if (preg_match('/^".*"\s*<.*>$/', $from)) {
-    $from_name = preg_replace('/"(.*)"(.*)/i',   '$1', $from); // It gives: Name
-    $from      = preg_replace("/(.*)\<(.*)\>/i", '$2', $from); // It gives: name@domain.tld
-  }
-  else if (!valid_email_address($from)) {
-    $from_error_message = t('The submitted from address (@from) is not valid.', array('@from' => $from));
-    drupal_set_message($from_error_message, 'error');
-    watchdog('smtp', $from_error_message, WATCHDOG_ERROR);
-    return false;
-  }
-=======
  */
   if (preg_match('/^"?.*"?\s*<.*>$/', $from)) {
     // . == Matches any single character except line break characters \r and \n.
@@ -379,16 +339,9 @@ function smtp_drupal_mail_wrapper($message) {
     watchdog('smtp', 'The submitted from address (@from) is not valid.', array('@from' => $from), WATCHDOG_ERROR);
     return FALSE;
   }
->>>>>>> 1.17.2.18
 
   // Defines the From value to what we expect.
-<<<<<<< smtp.module
-// This should be done correctly by PHPMailer now.
-//  $mail->From     = '"'. $from_name .'" <'. $from .'>';
   $mail->From     = $from;
-=======
-  $mail->From     = $from;
->>>>>>> 1.17.2.18
   $mail->FromName = $from_name;
   $mail->Sender   = $from;
 
@@ -737,31 +690,16 @@ function smtp_drupal_mail_wrapper($message) {
 
   // Set the protocol prefix for the smtp host.
   switch (variable_get('smtp_protocol', 'standard')) {
-<<<<<<< smtp.module
-    case "ssl":
-      $mail->SMTPSecure = 'ssl';
-=======
     case 'ssl':
       $mail->SMTPSecure = 'ssl';
->>>>>>> 1.17.2.18
       break;
-<<<<<<< smtp.module
-    case "tls":
-      $mail->SMTPSecure = 'tls';
-=======
 
     case 'tls':
       $mail->SMTPSecure = 'tls';
->>>>>>> 1.17.2.18
       break;
-<<<<<<< smtp.module
-    case "standard":
-      $mail->SMTPSecure = '';
-=======
 
     default:
       $mail->SMTPSecure = '';
->>>>>>> 1.17.2.18
   }
 
 
@@ -771,25 +709,13 @@ function smtp_drupal_mail_wrapper($message) {
   $mail->Mailer = 'smtp';
 
 
-<<<<<<< smtp.module
-  $mail->Subject = $subject;
-  $mail->Body = $body;
-
-  watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
-=======
   // Let the people know what is going on.
   watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
->>>>>>> 1.17.2.18
 
   // Try to send e-mail. If it fails, set watchdog entry.
   if (!$mail->Send()) {
-<<<<<<< smtp.module
-    watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mail->ErrorInfo), WATCHDOG_ERROR);
-    return false;
-=======
     watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mail->ErrorInfo), WATCHDOG_ERROR);
     return FALSE;
->>>>>>> 1.17.2.18
   }
 
   $mail->SmtpClose();
