@@ -894,7 +894,7 @@ function smtp_mailengine($op, $message = array()) {
           array(
               'id' => $message['id'],
               'to' => $to,
-              'from' => $message['headers']['Sender'],
+              'from' => $message['headers']['From'],
               'language' => $message['language'] ? $message['language'] : '',
               'subject'  => $message['subject'],
               'body'     => str_replace("\r", '', $message['body']),
