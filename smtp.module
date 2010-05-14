@@ -301,7 +301,13 @@ function smtp_drupal_mail_wrapper($message) {
     $headers['From'] = $properfrom;
   }
   if (!isset($headers['Reply-To']) || empty($headers['Reply-To'])) {
-    $headers['Reply-To'] = $from;
+    if (strpos($from, '<')) {
+      $reply = preg_replace('/>.*/', '', preg_replace('/.*</','',$from));
+    }
+    else {
+      $reply = $from;
+    }
+    $headers['Reply-To'] = $reply;
   }
 
   // Blank value will let the e-mail address appear.
@@ -902,6 +908,3 @@ function smtp_mailengine($op, $message = array()) {
 }
 
 } // if (!module_exists('mimemail'))
-
-
-
