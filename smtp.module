@@ -416,8 +416,11 @@ function smtp_drupal_mail_wrapper($message) {
             $content_type = 'text/html';
           break;
           case 'multipart/related':
+            // Get the boundary ID from the Content-Type header.
+            $boundary = _smtp_get_substring($value, 'boundary', '"', '"');
+            
             // The message includes an HTML part w/inline attachments.
-            $mail->ContentType = $content_type = 'multipart/related';
+            $mail->ContentType = $content_type = 'multipart/related; boundary="'. $boundary .'"';
           break;
           case 'multipart/alternative':
             // The message includes both a plain text and an HTML part.
