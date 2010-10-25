@@ -34,7 +34,7 @@ function smtp_help($path, $arg) {
  * Implementation of hook_menu().
  */
 function smtp_menu() {
-  $items['admin/settings/smtp'] = array(
+  $items['admin/config/system/smtp'] = array(
     'title'            => 'SMTP Authentication Support',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('smtp_admin_settings'),
