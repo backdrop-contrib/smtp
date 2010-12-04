@@ -3,14 +3,17 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  smtp.module,v 1.17.2.8 2008/09/23 22:03:01 oadaeh
+#  smtp.admin.inc: n/a
+#  smtp.mail.inc: n/a
+#  smtp.phpmailer.inc: n/a
+#  smtp.module,v 1.24.2.5 2010/10/25 10:25:44 franz
 #  smtp.info,v 1.3 2008/07/03 18:41:15 oadaeh
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2009-02-09 01:41+0100\n"
+"Project-Id-Version: SMTP 7.x\n"
+"POT-Creation-Date: 2010-11-15 15:27+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -19,219 +22,311 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: smtp.module:27;42 smtp.info:0
-msgid "Allows the sending of site e-mail through an SMTP server of your choice."
-msgstr ""
-
-#: smtp.module:62
+#: smtp.admin.inc:25
 msgid "SMTP.module is active."
 msgstr ""
 
-#: smtp.module:66
+#: smtp.admin.inc:29
 msgid "SMTP.module error: Can't find file."
 msgstr ""
 
-#: smtp.module:72
+#: smtp.admin.inc:35
 msgid "SMTP.module is INACTIVE."
 msgstr ""
 
-#: smtp.module:77
+#: smtp.admin.inc:41
 msgid "Install options"
 msgstr ""
 
-#: smtp.module:81
+#: smtp.admin.inc:45
 msgid "Turn this module on or off"
 msgstr ""
 
-#: smtp.module:83
+#: smtp.admin.inc:47
 msgid "On"
 msgstr ""
 
-#: smtp.module:83
+#: smtp.admin.inc:47
 msgid "Off"
 msgstr ""
 
-#: smtp.module:84
+#: smtp.admin.inc:48
 msgid "To uninstall this module you must turn it off here first."
 msgstr ""
 
-#: smtp.module:89
+#: smtp.admin.inc:53
 msgid "SMTP server settings"
 msgstr ""
 
-#: smtp.module:93
+#: smtp.admin.inc:57
 msgid "SMTP server"
 msgstr ""
 
-#: smtp.module:95
+#: smtp.admin.inc:59
 msgid "The address of your outgoing SMTP server."
 msgstr ""
 
-#: smtp.module:99
+#: smtp.admin.inc:63
 msgid "SMTP backup server"
 msgstr ""
 
-#: smtp.module:101
+#: smtp.admin.inc:65
 msgid "The address of your outgoing SMTP backup server. If the primary server can't be found this one will be tried. This is optional."
 msgstr ""
 
-#: smtp.module:105
+#: smtp.admin.inc:69
 msgid "SMTP port"
 msgstr ""
 
-#: smtp.module:109
+#: smtp.admin.inc:73
 msgid "The default SMTP port is 25, if that is being blocked try 80. Gmail uses 465. See !url for more information on configuring for use with Gmail."
 msgstr ""
 
-#: smtp.module:109
+#: smtp.admin.inc:73
 msgid "this page"
 msgstr ""
 
-#: smtp.module:114;123
+#: smtp.admin.inc:78;87
 msgid "No"
 msgstr ""
 
-#: smtp.module:115
+#: smtp.admin.inc:79
 msgid "Use SSL"
 msgstr ""
 
-#: smtp.module:116
+#: smtp.admin.inc:80
 msgid "Use TLS"
 msgstr ""
 
-#: smtp.module:118
+#: smtp.admin.inc:82
 msgid "This allows connection to an SMTP server that requires SSL encryption such as Gmail."
 msgstr ""
 
-#: smtp.module:124
+#: smtp.admin.inc:88
 msgid "Your PHP installation does not have SSL enabled. See the !url page on php.net for more information. Gmail requires SSL."
 msgstr ""
 
-#: smtp.module:124
+#: smtp.admin.inc:88
 msgid "OpenSSL Functions"
 msgstr ""
 
-#: smtp.module:128
+#: smtp.admin.inc:92
 msgid "Use encrypted protocol"
 msgstr ""
 
-#: smtp.module:136
+#: smtp.admin.inc:100
 msgid "SMTP Authentication"
 msgstr ""
 
-#: smtp.module:137
+#: smtp.admin.inc:101
 msgid "Leave blank if your SMTP server does not require authentication."
 msgstr ""
 
-#: smtp.module:141
+#: smtp.admin.inc:105
 msgid "Username"
 msgstr ""
 
-#: smtp.module:143
+#: smtp.admin.inc:107
 msgid "SMTP Username."
 msgstr ""
 
-#: smtp.module:147
+#: smtp.admin.inc:111
 msgid "Password"
 msgstr ""
 
-#: smtp.module:149
-msgid "SMTP password."
+#: smtp.admin.inc:113
+msgid "SMTP password. Leave blank if you don't wish to change it."
 msgstr ""
 
-#: smtp.module:154
+#: smtp.admin.inc:118
 msgid "E-mail options"
 msgstr ""
 
-#: smtp.module:158
+#: smtp.admin.inc:122
 msgid "E-mail from address"
 msgstr ""
 
-#: smtp.module:160
+#: smtp.admin.inc:124
 msgid "The e-mail address that all e-mails will be from."
 msgstr ""
 
-#: smtp.module:164
+#: smtp.admin.inc:128
 msgid "E-mail from name"
 msgstr ""
 
-#: smtp.module:166
-msgid "The name that all e-mails will be from. If left blank will use the site name of: "
+#: smtp.admin.inc:130
+msgid "The name that all e-mails will be from. If left blank will use the site name of:"
 msgstr ""
 
-#: smtp.module:175
-msgid "Drupal test e-mail"
+#: smtp.admin.inc:134
+msgid "Allow to send e-mails formated as Html"
 msgstr ""
 
-#: smtp.module:176
-msgid "If you receive this message it means your site is capable of sending e-mail."
+#: smtp.admin.inc:136
+msgid "Cheking this box will allow Html formated e-mails to be sent with the SMTP protocol."
 msgstr ""
 
-#: smtp.module:178
+#: smtp.admin.inc:145
+msgid "Drupal SMTP test e-mail"
+msgstr ""
+
+#: smtp.admin.inc:146
+msgid "If you receive this message it means your site is capable of using SMTP to send e-mail."
+msgstr ""
+
+#: smtp.admin.inc:148
 msgid "A test e-mail has been sent to @email. You may want to !check for any error messages."
 msgstr ""
 
-#: smtp.module:178
+#: smtp.admin.inc:148
 msgid "check the logs"
 msgstr ""
 
-#: smtp.module:182
+#: smtp.admin.inc:152
 msgid "Send test e-mail"
 msgstr ""
 
-#: smtp.module:186
+#: smtp.admin.inc:156
 msgid "E-mail address to send a test e-mail to"
 msgstr ""
 
-#: smtp.module:188
+#: smtp.admin.inc:158
 msgid "Type in an address to have a test e-mail sent there."
 msgstr ""
 
-#: smtp.module:193
+#: smtp.admin.inc:163
 msgid "Enable debugging"
 msgstr ""
 
-#: smtp.module:195
+#: smtp.admin.inc:165
 msgid "Checking this box will print SMTP messages from the server for every e-mail that is sent."
 msgstr ""
 
-#: smtp.module:213
+#: smtp.admin.inc:183
 msgid "You must enter an SMTP server address."
 msgstr ""
 
-#: smtp.module:217
+#: smtp.admin.inc:187
 msgid "You must enter an SMTP port number."
 msgstr ""
 
-#: smtp.module:221
+#: smtp.admin.inc:191
 msgid "The provided from e-mail address is not valid."
 msgstr ""
 
-#: smtp.module:286;287
+#: smtp.mail.inc:96;97
 msgid "There is no submitted from address."
 msgstr ""
 
-#: smtp.module:310;311
+#: smtp.mail.inc:109;110
 msgid "The submitted from address (@from) is not valid."
 msgstr ""
 
-#: smtp.module:393;394
+#: smtp.mail.inc:204;205
 msgid "The Content-Type of your message is not supported by PHPMailer and will be sent as text/plain instead."
 msgstr ""
 
-#: smtp.module:287;311;394;665;669;0
+#: smtp.mail.inc:417
+msgid "Attahment could not be found or accessed."
+msgstr ""
+
+#: smtp.mail.inc:438
+msgid "Attachment could not be found or accessed."
+msgstr ""
+
+#: smtp.mail.inc:97;110;205;485;489
 msgid "smtp"
 msgstr ""
 
-#: smtp.module:665
+#: smtp.mail.inc:485
 msgid "Sending mail to: @to"
 msgstr ""
 
-#: smtp.module:669
+#: smtp.mail.inc:489
 msgid "Error sending e-mail from @from to @to : !error_message"
 msgstr ""
 
-#: smtp.module:38 smtp.info:0
+#: smtp.phpmailer.inc:464;466;468;497;499;501
+msgid "Invalid address"
+msgstr ""
+
+#: smtp.phpmailer.inc:555
+msgid "You must provide at least one recipient email address."
+msgstr ""
+
+#: smtp.phpmailer.inc:569
+msgid "Message body empty"
+msgstr ""
+
+#: smtp.phpmailer.inc:615;625;631;640
+msgid "Could not execute: !smail"
+msgstr ""
+
+#: smtp.phpmailer.inc:699
+msgid "Could not instantiate mail function."
+msgstr ""
+
+#: smtp.phpmailer.inc:717;835
+msgid "SMTP Error: Could not connect to SMTP host."
+msgstr ""
+
+#: smtp.phpmailer.inc:721
+msgid "The following From address failed: !from"
+msgstr ""
+
+#: smtp.phpmailer.inc:768
+msgid "SMTP Error: The following recipients failed: !bad"
+msgstr ""
+
+#: smtp.phpmailer.inc:771
+msgid "SMTP Error: Data not accepted."
+msgstr ""
+
+#: smtp.phpmailer.inc:819
+msgid "StartTLS not supported by server or could not initiate session."
+msgstr ""
+
+#: smtp.phpmailer.inc:829
+msgid "SMTP Error: Could not authenticate."
+msgstr ""
+
+#: smtp.phpmailer.inc:1239
+msgid "Signing Error: !err"
+msgstr ""
+
+#: smtp.phpmailer.inc:1341;1797
+msgid "Could not access file: !nofile"
+msgstr ""
+
+#: smtp.phpmailer.inc:1465
+msgid "File Error: Could not open file: !nofile"
+msgstr ""
+
+#: smtp.phpmailer.inc:1516
+msgid "Unknown encoding: !enc"
+msgstr ""
+
+#: smtp.phpmailer.inc:1923
+msgid "SMTP server error: !lasterror"
+msgstr ""
+
+#: smtp.phpmailer.inc:2152
+msgid "Cannot set or reset variable: !name"
+msgstr ""
+
+#: smtp.module:27 smtp.module:40 smtp.info:0
+msgid "Allow for site emails to be sent through an SMTP server of your choice."
+msgstr ""
+
+#: smtp.module:52
+msgid "Administer SMTP Authentication Support module"
+msgstr ""
+
+#: smtp.module:53
+msgid "Perform administration tasks for SMTP Authentication Support module."
+msgstr ""
+
+#: smtp.module:36 smtp.info:0
 msgid "SMTP Authentication Support"
 msgstr ""
 

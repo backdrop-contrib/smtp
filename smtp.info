@@ -1,6 +1,11 @@
 ; $Id$
 name = SMTP Authentication Support
-description = "Allows the sending of site e-mail through an SMTP server of your choice."
-core = 6.x
+description = "Allow for site emails to be sent through an SMTP server of your choice."
+core = 7.x
 package = Mail
-php = 4.0.0
+configure = admin/config/system/smtp
+files[] = smtp.module
+files[] = smtp.admin.inc
+files[] = smtp.mail.inc
+files[] = smtp.phpmailer.inc
+files[] = smtp.transport.inc
