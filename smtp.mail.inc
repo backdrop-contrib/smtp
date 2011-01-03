@@ -90,9 +90,9 @@ class SmtpMailSystem implements MailSystemInterface {
 
     if ($from == NULL || $from == '') {
       // If from e-mail address is blank, use smtp_from config option.
-      if ($from = variable_get('smtp_from', '') == '') {
+      if (($from = variable_get('smtp_from', '')) == '') {
         // If smtp_from config option is blank, use site_email.
-        if ($from = variable_get('site_email', '') == '') {
+        if (($from = variable_get('site_email', '')) == '') {
           drupal_set_message(t('There is no submitted from address.'), 'error');
           watchdog('smtp', 'There is no submitted from address.', array(), WATCHDOG_ERROR);
           return FALSE;
