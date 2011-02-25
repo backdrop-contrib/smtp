@@ -1,4 +1,3 @@
-; $Id$
 name = SMTP Authentication Support
 description = "Allow for site emails to be sent through an SMTP server of your choice."
 core = 7.x

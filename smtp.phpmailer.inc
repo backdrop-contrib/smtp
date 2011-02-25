@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * The mail handler class in smtp module, based on code of the phpmailer library,

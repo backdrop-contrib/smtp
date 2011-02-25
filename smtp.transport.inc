@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * SMTP mail transport class for the smtp module,based on code of the phpmailer

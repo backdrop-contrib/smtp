@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * The code processing mail in the smtp module.

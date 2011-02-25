@@ -1,4 +1,3 @@
-// $Id$
 
 
 2009-11-12 Franz G Vanderlinde franz@chuva-inc.com
