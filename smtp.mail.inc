@@ -240,7 +240,7 @@ class SmtpMailSystem implements MailSystemInterface {
           break;
 
         case 'cc':
-          $ccrecipients = split(',', $value);
+          $ccrecipients = explode(',', $value);
           foreach ($ccrecipients as $ccrecipient) {
             if (strpos($ccrecipient, '<') !== FALSE) {
               $ccparts = explode(' <', $ccrecipient);
@@ -256,7 +256,7 @@ class SmtpMailSystem implements MailSystemInterface {
           break;
 
         case 'bcc':
-          $bccrecipients = split(',', $value);
+          $bccrecipients = explode(',', $value);
           foreach ($bccrecipients as $bccrecipient) {
             if (strpos($bccrecipient, '<') !== FALSE) {
               $bccparts = explode(' <', $bccrecipient);
