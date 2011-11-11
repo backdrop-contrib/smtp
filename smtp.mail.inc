@@ -161,11 +161,9 @@ class SmtpMailSystem implements MailSystemInterface {
               $vars[$new_key] = $new_var;
             }
           }
-          // Set the charset based on the provided value, if there is one.
-          $charset = $vars['charset'];
-          if ($charset) {
-            $mailer->CharSet = $charset;
-          }
+          // Set the charset based on the provided value, otherwise set it to UTF-8 (which is Drupals internal default).
+          $mailer->CharSet = isset($vars['charset']) ? $vars['charset'] : 'UTF-8';
+
           switch ($vars[0]) {
             case 'text/plain':
               // The message includes only a plain text part.

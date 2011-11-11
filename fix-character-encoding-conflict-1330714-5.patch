@@ -1,0 +1,31 @@
+From 57d04c7a3f86841ad53c955f209a65428a4cf230 Mon Sep 17 00:00:00 2001
+From: Fabian Franz <ffranz@trellon.com>
+Date: Fri, 11 Nov 2011 18:22:05 +0000
+Subject: [PATCH] Issue #1330714 by topham: Character encoding conflict between Drupal and phpmailer.
+
+---
+ smtp.mail.inc |    8 +++-----
+ 1 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/smtp.mail.inc b/smtp.mail.inc
+index e35eec8..23f697d 100644
+--- a/smtp.mail.inc
++++ b/smtp.mail.inc
+@@ -161,11 +161,9 @@ class SmtpMailSystem implements MailSystemInterface {
+               $vars[$new_key] = $new_var;
+             }
+           }
+-          // Set the charset based on the provided value, if there is one.
+-          $charset = $vars['charset'];
+-          if ($charset) {
+-            $mailer->CharSet = $charset;
+-          }
++          // Set the charset based on the provided value, otherwise set it to UTF-8 (which is Drupals internal default).
++          $mailer->CharSet = isset($vars['charset']) ? $vars['charset'] : 'UTF-8';
++
+           switch ($vars[0]) {
+             case 'text/plain':
+               // The message includes only a plain text part.
+-- 
+1.7.0.4
+
