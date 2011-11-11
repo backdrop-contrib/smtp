@@ -170,7 +170,7 @@ function smtp_admin_settings() {
 
 
 /**
- * Validataion for the administrative settings form.
+ * Validation for the administrative settings form.
  *
  * @param form
  *   An associative array containing the structure of the form.
@@ -189,9 +189,14 @@ function smtp_admin_settings_validate($form, &$form_state) {
   if ($form_state['values']['smtp_from'] && !valid_email_address($form_state['values']['smtp_from'])) {
     form_set_error('smtp_from', t('The provided from e-mail address is not valid.'));
   }
+  // If username is set empty, we must set both username/password empty as
+  // as well.
+  if (empty($form_state['values']['smtp_username'])) {
+    $form_state['values']['smtp_password'] = '';
+  }
   // A little hack. When form is presentend, the password is not shown (Drupal way of doing).
-  // So, if user submits the form without changing the password, we mus prevent it from being reset.
-  if (empty($form_state['values']['smtp_password'])) {
+  // So, if user submits the form without changing the password, we must prevent it from being reset.
+  elseif (empty($form_state['values']['smtp_password'])) {
     unset($form_state['values']['smtp_password']);
   }
 }  //  End of smtp_admin_settings_validate().
