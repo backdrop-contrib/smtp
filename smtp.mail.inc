@@ -444,6 +444,17 @@ class SmtpMailSystem implements MailSystemInterface {
         break;
     }
 
+    // Process mimemail attachments
+    if (isset($message['params']['attachments'])) {
+      foreach ($message['params']['attachments'] as $attachment) {
+        if (isset($attachment['filecontent'])) {
+          $mailer->AddStringAttachment($attachment['filecontent'], $attachment['filename'], 'base64', $attachment['filemime']);
+        }
+        if (isset($attachment['filepath'])) {
+          $mailer->AddAttachment($attachment['filepath'], $attachment['filename'], 'base64', $attachment['filemime']);
+        }
+      }
+    }
 
     // Set the authentication settings.
     $username = variable_get('smtp_username', '');
