@@ -37,11 +37,15 @@ function smtp_uninstall() {
 }  //  End of contact_attach_uninstall().
 
 function smtp_enable() {
-  variable_set('mail_system', array('default-system' => 'SmtpMailSystem'));
+  $mail_modes = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+  $mail_modes['default-system'] = 'SmtpMailSystem';
+  variable_set('mail_system', $mail_modes);
 }
 
 function smtp_disable() {
-  variable_set('mail_system', array('default-system' => 'DefaultMailSystem'));
+  $mail_modes = variable_get('mail_system');
+  $mail_modes['default-system'] = 'DefaultMailSystem';
+  variable_set('mail_system', $mail_modes);
 }
 
 function smtp_update_7000() {
