@@ -410,7 +410,7 @@ class SmtpMailSystem implements MailSystemInterface {
             $file_type     = $this->_get_substring($body_part, 'Content-Type', ' ', ';');
 
             if (file_exists($file_path)) {
-              if (!$mailer->AddAttachment($file_path, $file_name, $file_encoding, $filetype)) {
+              if (!$mailer->AddAttachment($file_path, $file_name, $file_encoding, $file_type)) {
                 drupal_set_message(t('Attahment could not be found or accessed.'));
               }
             }
