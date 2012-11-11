@@ -351,10 +351,10 @@ class SmtpMailSystem implements MailSystemInterface {
           // $mailer->AltBody or $mailer->Body, depending on whether there is
           // also a text/html part ot not.
           if (strpos($body_part, 'multipart/alternative')) {
-            // Clean up the text.
-            $body_part = trim($this->_remove_headers(trim($body_part)));
             // Get boundary ID from the Content-Type header.
             $boundary2 = $this->_get_substring($body_part, 'boundary', '"', '"');
+            // Clean up the text.
+            $body_part = trim($this->_remove_headers(trim($body_part)));
             // Split the body based on the boundary ID.
             $body_parts2 = $this->_boundary_split($body_part, $boundary2);
 
@@ -547,20 +547,28 @@ class SmtpMailSystem implements MailSystemInterface {
   protected function _remove_headers($input) {
     $part_array = explode("\n", $input);
 
-    if (strpos($part_array[0], 'Content') !== FALSE) {
-      if (strpos($part_array[1], 'Content') !== FALSE) {
-        if (strpos($part_array[2], 'Content') !== FALSE) {
-            array_shift($part_array);
-            array_shift($part_array);
-            array_shift($part_array);
+    // will strip these headers according to RFC2045
+    $headers_to_strip = array( 'Content-Type', 'Content-Transfer-Encoding', 'Content-ID', 'Content-Disposition');
+    $pattern = '/^('. implode('|', $headers_to_strip) .'):/';
+
+    while (count($part_array) > 0) {
+
+      // ignore trailing spaces/newlines
+      $line = rtrim($part_array[0]);
+
+      // if the line starts with a known header string
+      if (preg_match($pattern, $line)) {
+        $line = rtrim(array_shift($part_array));
+        // remove line containing matched header.
+
+        // if line ends in a ';' and the next line starts with four spaces, it's a continuation
+        // of the header split onto the next line. Continue removing lines while we have this condition.
+        while (substr($line, -1) == ';' && count($part_array) > 0 && substr($part_array[0], 0, 4) == '    ') {
+          $line = rtrim(array_shift($part_array));
         }
-        else {
-          array_shift($part_array);
-          array_shift($part_array);
-        }
-      }
-      else {
-        array_shift($part_array);
+      } else {
+        // no match header, must be past headers; stop searching.
+        break;
       }
     }
 
