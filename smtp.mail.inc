@@ -249,7 +249,7 @@ class SmtpMailSystem implements MailSystemInterface {
               $ccname = '';
               $ccaddr = $ccrecipient;
             }
-            $mailer->AddBCC($ccaddr, $ccname);
+            $mailer->AddCC($ccaddr, $ccname);
           }
           break;
 
