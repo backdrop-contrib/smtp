@@ -1,9 +1,12 @@
 <?php
+
 /**
  * @file
  * Administrative page code for the smtp module.
  *
  */
+
+
 /**
  * Administrative settings.
  *
