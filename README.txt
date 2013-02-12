@@ -16,10 +16,10 @@ INSTALLATION INSTRUCTIONS
 1.  Copy the files included in the tarball into a directory named "smtp" in
     your Drupal sites/all/modules/ directory.
 2.  Login as site administrator.
-3.  Enable the SMTP Authentication Support module on the Administer -> Site
-    building -> Modules page.
-4.  Fill in required settings on the Administer -> Site configuration -> SMTP
-    Authentication Support page.
+3.  Enable the SMTP Authentication Support module on the Administer -> Modules
+    page.
+4.  Fill in required settings on the Administer -> Configuration -> System ->
+    SMTP Authentication Support page.
 5.  Enjoy.
 
 NOTES
@@ -27,10 +27,10 @@ NOTES
 This module sends email by connecting to an SMTP server.  Therefore, you need
 to have access to an SMTP server for this module to work.
 
-Drupal will often use the email address entered into Administrator -> Site
-configuration -> E-mail address as the from address.  It is important for
-this to be the correct address and some ISPs will block email that comes from
-an invalid address.
+Drupal will often use the email address entered into Administrator ->
+Configuration -> Site information -> E-mail address as the from address.  It is
+important for this to be the correct address and some ISPs will block email that
+comes from an invalid address.
 
 This module no longer uses the PHPMailer package as an external library, instead
 a slimmed down version of the library have been relicensed and integrated with the
