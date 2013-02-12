@@ -23,7 +23,7 @@ function smtp_help($path, $arg) {
     case 'admin/help#smtp':
       return t('Allow for site emails to be sent through an SMTP server of your choice.');
   }
-}  //  End of smtp_help().
+}
 
 /**
  * Implements hook_menu().
@@ -38,7 +38,7 @@ function smtp_menu() {
     'file'             => 'smtp.admin.inc',
   );
   return $items;
-}  //  End of smtp_menu().
+}
 
 /**
  * Implements hook_permission().
@@ -49,7 +49,7 @@ function smtp_permission() {
       'title' => t('Administer SMTP Authentication Support module'),
       'description' => t('Perform administration tasks for SMTP Authentication Support module.'))
   );
-}  //  End of smtp_permission().
+}
 
 
 /**
