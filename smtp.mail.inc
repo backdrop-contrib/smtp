@@ -46,12 +46,12 @@ class SmtpMailSystem implements MailSystemInterface {
    *   TRUE if the mail was successfully accepted, otherwise FALSE.
    */
   public function mail(array $message) {
-    $id       = $message['id'];
-    $to       = $message['to'];
-    $from     = $message['from'];
-    $subject  = $message['subject'];
-    $body     = $message['body'];
-    $headers  = $message['headers'];
+    $id = $message['id'];
+    $to = $message['to'];
+    $from = $message['from'];
+    $body = $message['body'];
+    $headers = $message['headers'];
+    $subject = $message['subject'];
 
     // Create a new PHPMailer object - autoloaded from registry.
     $mailer = new PHPMailer();
