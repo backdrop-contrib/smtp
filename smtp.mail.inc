@@ -481,10 +481,9 @@ class SmtpMailSystem implements MailSystemInterface {
 
 
     // Set other connection settings.
-    $mailer->Host   = variable_get('smtp_host', '') . ';' . variable_get('smtp_hostbackup', '');
-    $mailer->Port   = variable_get('smtp_port', '25');
+    $mailer->Host = variable_get('smtp_host', '') . ';' . variable_get('smtp_hostbackup', '');
+    $mailer->Port = variable_get('smtp_port', '25');
     $mailer->Mailer = 'smtp';
-
 
     // Let the people know what is going on.
     watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
