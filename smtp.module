@@ -58,6 +58,6 @@ function smtp_permission() {
 function smtp_mail($key, &$message, $params) {
   if ($key == 'smtp-test') {
     $message['subject'] = $params['subject'];
-    $message['body']    = $params['body'];
+    $message['body'] = $params['body'];
   }
 }  //  End of smtp_mail().
