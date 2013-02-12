@@ -497,6 +497,7 @@ class SmtpMailSystem implements MailSystemInterface {
     $mailer->SmtpClose();
     return TRUE;
   }
+  
   /**
    * Splits the input into parts based on the given boundary.
    *
@@ -529,8 +530,6 @@ class SmtpMailSystem implements MailSystemInterface {
 
     return $parts;
   }  //  End of _smtp_boundary_split().
-
-
 
   /**
    * Strips the headers from the body part.
@@ -571,8 +570,6 @@ class SmtpMailSystem implements MailSystemInterface {
     $output = implode("\n", $part_array);
     return $output;
   }  //  End of _smtp_remove_headers().
-
-
 
   /**
    * Returns a string that is contained within another string.
