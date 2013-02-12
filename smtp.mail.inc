@@ -497,7 +497,7 @@ class SmtpMailSystem implements MailSystemInterface {
     $mailer->SmtpClose();
     return TRUE;
   }
-  
+
   /**
    * Splits the input into parts based on the given boundary.
    *
