@@ -60,4 +60,4 @@ function smtp_mail($key, &$message, $params) {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
   }
-}  //  End of smtp_mail().
+}
