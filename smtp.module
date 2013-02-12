@@ -16,7 +16,7 @@
  */
 
 /**
- * Implementation of hook_help().
+ * Implements hook_help().
  */
 function smtp_help($path, $arg) {
   switch ($path) {
@@ -26,7 +26,7 @@ function smtp_help($path, $arg) {
 }  //  End of smtp_help().
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function smtp_menu() {
   $items['admin/config/system/smtp'] = array(
@@ -41,7 +41,7 @@ function smtp_menu() {
 }  //  End of smtp_menu().
 
 /**
- * Implementation of hook_permission().
+ * Implements hook_permission().
  */
 function smtp_permission() {
   return array(
@@ -53,7 +53,7 @@ function smtp_permission() {
 
 
 /**
- * Implementation of hook_mail().
+ * Implements hook_mail().
  */
 function smtp_mail($key, &$message, $params) {
   if ($key == 'smtp-test') {
