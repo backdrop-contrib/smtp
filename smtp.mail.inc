@@ -275,27 +275,23 @@ class SmtpMailSystem implements MailSystemInterface {
       }
     }
 
-
-  /**
-   * TODO
-   * Need to figure out the following.
-
-    // Add one last header item, but not if it has already been added.
-    $errors_to = FALSE;
-    foreach ($mailer->CustomHeader as $custom_header) {
-      if ($custom_header[0] = '') {
-        $errors_to = TRUE;
-      }
-    }
-    if ($errors_to) {
-      $mailer->AddCustomHeader('Errors-To: '. $from);
-    }
-   */
-
-
+/**
+ * TODO
+ * Need to figure out the following.
+ *
+ * Add one last header item, but not if it has already been added.
+ * $errors_to = FALSE;
+ * foreach ($mailer->CustomHeader as $custom_header) {
+ *   if ($custom_header[0] = '') {
+ *     $errors_to = TRUE;
+ *   }
+ * }
+ * if ($errors_to) {
+ *   $mailer->AddCustomHeader('Errors-To: '. $from);
+ * }
+ */
     // Add the message's subject.
     $mailer->Subject = $subject;
-
 
     // Processes the message's body.
     switch ($content_type) {
