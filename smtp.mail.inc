@@ -544,7 +544,7 @@ class SmtpMailSystem implements MailSystemInterface {
 
     // will strip these headers according to RFC2045
     $headers_to_strip = array( 'Content-Type', 'Content-Transfer-Encoding', 'Content-ID', 'Content-Disposition');
-    $pattern = '/^('. implode('|', $headers_to_strip) .'):/';
+    $pattern = '/^(' . implode('|', $headers_to_strip) . '):/';
 
     while (count($part_array) > 0) {
 
@@ -561,7 +561,8 @@ class SmtpMailSystem implements MailSystemInterface {
         while (substr($line, -1) == ';' && count($part_array) > 0 && substr($part_array[0], 0, 4) == '    ') {
           $line = rtrim(array_shift($part_array));
         }
-      } else {
+      }
+      else {
         // no match header, must be past headers; stop searching.
         break;
       }
