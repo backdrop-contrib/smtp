@@ -61,7 +61,7 @@ class SmtpMailSystem implements MailSystemInterface {
       $mailer->SMTPDebug = TRUE;
     }
 
-    // Set the from name and e-mail address.
+    // Set the from name.
     if (variable_get('smtp_fromname', '') != '') {
       $from_name = variable_get('smtp_fromname', '');
     }
