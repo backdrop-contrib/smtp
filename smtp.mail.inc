@@ -482,16 +482,19 @@ class SmtpMailSystem implements MailSystemInterface {
     $mailer->Port = variable_get('smtp_port', '25');
     $mailer->Mailer = 'smtp';
 
-    // Let the people know what is going on.
-    watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
-
-    // Try to send e-mail. If it fails, set watchdog entry.
-    if (!$mailer->Send()) {
-      watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mailer->ErrorInfo), WATCHDOG_ERROR);
-      return FALSE;
+    $mailerArr = array(
+      'mailer' => $mailer,
+      'to' => $to,
+      'from' => $from,
+    );
+    if (variable_get('smtp_queue', FALSE)) {
+      watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
+      smtp_send_queue($mailerArr);
+    }
+    else {
+      return _smtp_mailer_send($mailerArr);
     }
 
-    $mailer->SmtpClose();
     return TRUE;
   }
 
