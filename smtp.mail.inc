@@ -299,7 +299,7 @@ class SmtpMailSystem implements MailSystemInterface {
     switch ($content_type) {
       case 'multipart/related':
         $mailer->Body = $body;
-        // TODO: Firgure out if there is anything more to handling this type.
+        // TODO: Figure out if there is anything more to handling this type.
         break;
 
       case 'multipart/alternative':
