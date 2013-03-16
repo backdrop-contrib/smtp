@@ -277,21 +277,21 @@ class SmtpMailSystem implements MailSystemInterface {
       }
     }
 
-/**
- * TODO
- * Need to figure out the following.
- *
- * Add one last header item, but not if it has already been added.
- * $errors_to = FALSE;
- * foreach ($mailer->CustomHeader as $custom_header) {
- *   if ($custom_header[0] = '') {
- *     $errors_to = TRUE;
- *   }
- * }
- * if ($errors_to) {
- *   $mailer->AddCustomHeader('Errors-To: '. $from);
- * }
- */
+    /**
+     * TODO
+     * Need to figure out the following.
+     *
+     * Add one last header item, but not if it has already been added.
+     * $errors_to = FALSE;
+     * foreach ($mailer->CustomHeader as $custom_header) {
+     *   if ($custom_header[0] = '') {
+     *     $errors_to = TRUE;
+     *   }
+     * }
+     * if ($errors_to) {
+     *   $mailer->AddCustomHeader('Errors-To: '. $from);
+     * }
+     */
     // Add the message's subject.
     $mailer->Subject = $subject;
 
@@ -299,12 +299,7 @@ class SmtpMailSystem implements MailSystemInterface {
     switch ($content_type) {
       case 'multipart/related':
         $mailer->Body = $body;
-
-  /**
-   * TODO
-   * Firgure out if there is anything more to handling this type.
-   */
-
+        // TODO: Firgure out if there is anything more to handling this type.
         break;
 
       case 'multipart/alternative':
