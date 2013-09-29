@@ -438,14 +438,16 @@ class SmtpMailSystem implements MailSystemInterface {
         break;
     }
 
-    // Process mimemail attachments
+    // Process mimemail attachments, which are prepared in mimemail_mail().
     if (isset($message['params']['attachments'])) {
       foreach ($message['params']['attachments'] as $attachment) {
         if (isset($attachment['filecontent'])) {
           $mailer->AddStringAttachment($attachment['filecontent'], $attachment['filename'], 'base64', $attachment['filemime']);
         }
         if (isset($attachment['filepath'])) {
-          $mailer->AddAttachment($attachment['filepath'], $attachment['filename'], 'base64', $attachment['filemime']);
+          $filename = isset($attachment['filename']) ? $attachment['filename'] : basename($attachment['filepath']);
+          $filemime = isset($attachment['filemime']) ? $attachment['filemime'] : file_get_mimetype($attachment['filepath']);
+          $mailer->AddAttachment($attachment['filepath'], $filename, 'base64', $filemime);
         }
       }
     }
