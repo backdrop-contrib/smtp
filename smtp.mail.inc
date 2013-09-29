@@ -362,10 +362,21 @@ class SmtpMailSystem implements MailSystemInterface {
               }
               // If plain/html within the body part, add it to $mailer->Body.
               elseif (strpos($body_part2, 'text/html')) {
+                // Get the encoding.
+                $body_part2_encoding = $this->_get_substring($body_part2, 'Content-Transfer-Encoding', ' ', "\n");
                 // Clean up the text.
                 $body_part2 = trim($this->_remove_headers(trim($body_part2)));
-                // Include it as part of the mail object.
-                $mailer->Body = $body_part2;
+                // Check whether the encoding is base64, and if so, decode it.
+                if (drupal_strtolower($body_part2_encoding) == 'base64') {
+                  // Include it as part of the mail object.
+                  $mailer->Body = base64_decode($body_part2);
+                  // Ensure the whole message is recoded in the base64 format.
+                  $mailer->Encoding = 'base64';
+                }
+                else {
+                  // Include it as part of the mail object.
+                  $mailer->Body = $body_part2;
+                }
                 $mailer->ContentType = 'multipart/mixed';
               }
             }
