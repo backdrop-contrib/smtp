@@ -230,6 +230,9 @@ class SmtpMailSystem implements MailSystemInterface {
           break;
 
         case 'return-path':
+          $mailer->Sender = $value;
+          break;
+
         case 'mime-version':
         case 'x-mailer':
           // Let PHPMailer specify these.
