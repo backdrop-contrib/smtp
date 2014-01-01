@@ -410,7 +410,7 @@ class SmtpMailSystem implements MailSystemInterface {
             $mailer->ContentType = 'multipart/mixed';
           }
           // Add the attachment.
-          elseif (strpos($body_part, 'Content-Disposition: attachment;')) {
+          elseif (strpos($body_part, 'Content-Disposition: attachment;') && !isset($message['params']['attachments'])) {
             $file_path     = $this->_get_substring($body_part, 'filename=', '"', '"');
             $file_name     = $this->_get_substring($body_part, ' name=', '"', '"');
             $file_encoding = $this->_get_substring($body_part, 'Content-Transfer-Encoding', ' ', "\n");
