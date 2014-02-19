@@ -167,6 +167,8 @@ function smtp_admin_settings() {
     '#description'   => t('Checking this box will print SMTP messages from the server for every e-mail that is sent.'),
   );
 
+  $form['#submit'][] = 'smtp_admin_settings_form_submit';
+
   return system_settings_form($form);
 }  //  End of smtp_admin_settings().
 
@@ -205,3 +207,27 @@ function smtp_admin_settings_validate($form, &$form_state) {
   }
 }  //  End of smtp_admin_settings_validate().
 
+/**
+ * Submit handler().
+ */
+function smtp_admin_settings_form_submit($form, &$form_state) {
+  // Check if SMTP status has been changed.
+  if (
+    (!variable_get('smtp_on', FALSE) && $form_state['values']['smtp_on']) ||
+    (variable_get('smtp_on', FALSE) && !$form_state['values']['smtp_on'])
+  ) {
+    $mail_modes = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+
+    // Turning on.
+    if ($form_state['values']['smtp_on']) {
+      variable_set('smtp_previous_mail_system', $mail_modes['default-system']);
+      $mail_modes['default-system'] = 'SmtpMailSystem';
+    }
+    // Turning off.
+    else {
+      $mail_modes['default-system'] = variable_get('smtp_previous_mail_system', 'DefaultMailSystem');
+    }
+
+    variable_set('mail_system', $mail_modes);
+  }
+}
