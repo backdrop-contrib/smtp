@@ -52,7 +52,7 @@ function smtp_admin_settings() {
   $form['onoff']['smtp_queue'] = array(
     '#type'  => 'checkbox',
     '#title' => t('Send mail by queue'),
-    '#default_value' => variable_get('smtp_queue', 1),
+    '#default_value' => variable_get('smtp_queue', FALSE),
     '#description'   => t('Mails will be sent by drupal queue api.'),
   );
 
