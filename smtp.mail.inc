@@ -274,6 +274,10 @@ class SmtpMailSystem implements MailSystemInterface {
           }
           break;
 
+        case 'message-id':
+          $mailer->MessageID = $value;
+          break;
+
         default:
           // The header key is not special - add it as is.
           $mailer->AddCustomHeader($key . ': ' . $value);
