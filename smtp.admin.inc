@@ -49,6 +49,12 @@ function smtp_admin_settings() {
     '#options'       => array(1 => t('On'), 0 => t('Off')),
     '#description'   => t('To uninstall this module you must turn it off here first.'),
   );
+  $form['onoff']['smtp_queue'] = array(
+    '#type'  => 'checkbox',
+    '#title' => t('Send mail by queue'),
+    '#default_value' => variable_get('smtp_queue', 1),
+    '#description'   => t('Mails will be sent by drupal queue api.'),
+  );
 
   $form['server'] = array(
     '#type'  => 'fieldset',
