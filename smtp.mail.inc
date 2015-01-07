@@ -230,7 +230,14 @@ class SmtpMailSystem implements MailSystemInterface {
           break;
 
         case 'return-path':
-          $mailer->Sender = $value;
+          if (strpos($value, '<') !== FALSE) {
+            $returnPathParts = explode('<', $value);
+            $returnPathAddr = rtrim($returnPathParts[1], '>');
+            $mailer->Sender = $returnPathAddr;
+          }
+          else {
+            $mailer->Sender = $value;
+          }
           break;
 
         case 'mime-version':
