@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Enables Drupal to send e-mail directly to an SMTP server.
+ * Enables Backdrop to send e-mail directly to an SMTP server.
  *
  * This module uses a customized extract of the PHPMailer
  * library (originally by Brent R. Matzelle, now maintained
  *  by Codeworx Tech.) relicensed from LGPL to GPL, included
  * as a part of the module.
  *
- * Overriding mail handling in Drupal to make SMTP the default
+ * Overriding mail handling in Backdrop to make SMTP the default
  * transport layer, requires to change the mail_system variable's
  * default value array('default-system' => 'DefaultMailSystem').
  * This module uses array('default-system' => 'SmtpMailSystem').
@@ -31,7 +31,7 @@ function smtp_help($path, $arg) {
 function smtp_menu() {
   $items['admin/config/system/smtp'] = array(
     'title'            => 'SMTP Authentication Support',
-    'page callback'    => 'drupal_get_form',
+    'page callback'    => 'backdrop_get_form',
     'page arguments'   => array('smtp_admin_settings'),
     'access arguments' => array('administer smtp module'),
     'description'      => 'Allow for site emails to be sent through an SMTP server of your choice.',
@@ -77,7 +77,7 @@ function smtp_cron_queue_info() {
  * smtp_send_queue queuer.
  */
 function smtp_send_queue($mailerObj) {
-  $queue = DrupalQueue::get('smtp_send_queue');
+  $queue = BackdropQueue::get('smtp_send_queue');
   $queue->createItem($mailerObj);
 }
 

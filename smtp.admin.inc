@@ -16,25 +16,25 @@
 function smtp_admin_settings() {
   // Override the smtp_library variable.
   if (module_exists('mimemail') &&
-      strpos(variable_get('smtp_library', ''), 'mimemail')) {
+      strpos(config_get('smtp.settings', 'smtp_library'), 'mimemail')) {
     // don't touch smtp_library
   }
   else {
-    if (variable_get('smtp_on', 0)) {
-      $smtp_path = drupal_get_filename('module', 'smtp');
+    if (config_get('smtp.settings', 'smtp_on')) {
+      $smtp_path = backdrop_get_filename('module', 'smtp');
       if ($smtp_path) {
-        variable_set('smtp_library', $smtp_path);
-        drupal_set_message(t('SMTP.module is active.'));
+        config_set('smtp.settings', 'smtp_library', $smtp_path);
+        backdrop_set_message(t('SMTP.module is active.'));
       }
-      // If drupal can't find the path to the module, display an error.
+      // If backdrop can't find the path to the module, display an error.
       else {
-        drupal_set_message(t("SMTP.module error: Can't find file."), 'error');
+        backdrop_set_message(t("SMTP.module error: Can't find file."), 'error');
       }
     }
     // If this module is turned off, delete the variable.
     else {
-      variable_del('smtp_library');
-      drupal_set_message(t('SMTP.module is INACTIVE.'));
+      config_set('smtp.settings', 'smtp_library', '');
+      backdrop_set_message(t('SMTP.module is INACTIVE.'));
     }
   }
 
@@ -45,15 +45,15 @@ function smtp_admin_settings() {
   $form['onoff']['smtp_on'] = array(
     '#type'          => 'radios',
     '#title'         => t('Turn this module on or off'),
-    '#default_value' => variable_get('smtp_on', 0),
+    '#default_value' => config_get('smtp.settings', 'smtp_on'),
     '#options'       => array(1 => t('On'), 0 => t('Off')),
     '#description'   => t('To uninstall this module you must turn it off here first.'),
   );
   $form['onoff']['smtp_queue'] = array(
     '#type'  => 'checkbox',
     '#title' => t('Send mail by queue'),
-    '#default_value' => variable_get('smtp_queue', FALSE),
-    '#description'   => t('Mails will be sent by drupal queue api.'),
+    '#default_value' => config_get('smtp.settings', 'smtp_queue'),
+    '#description'   => t('Mails will be sent by Backdrop queue api.'),
   );
 
   $form['server'] = array(
@@ -63,13 +63,13 @@ function smtp_admin_settings() {
   $form['server']['smtp_host'] = array(
     '#type'          => 'textfield',
     '#title'         => t('SMTP server'),
-    '#default_value' => variable_get('smtp_host', ''),
+    '#default_value' => config_get('smtp.settings', 'smtp_host'),
     '#description'   => t('The address of your outgoing SMTP server.'),
   );
   $form['server']['smtp_hostbackup'] = array(
     '#type'          => 'textfield',
     '#title'         => t('SMTP backup server'),
-    '#default_value' => variable_get('smtp_hostbackup', ''),
+    '#default_value' => config_get('smtp.settings', 'smtp_hostbackup'),
     '#description'   => t('The address of your outgoing SMTP backup server. If the primary server can\'t be found this one will be tried. This is optional.'),
   );
   $form['server']['smtp_port'] = array(
@@ -77,7 +77,7 @@ function smtp_admin_settings() {
     '#title'         => t('SMTP port'),
     '#size'          => 6,
     '#maxlength'     => 6,
-    '#default_value' => variable_get('smtp_port', '25'),
+    '#default_value' => config_get('smtp.settings', 'smtp_port'),
     '#description'   => t('The default SMTP port is 25, if that is being blocked try 80. Gmail uses 465. See !url for more information on configuring for use with Gmail.', array('!url' => l(t('this page'), 'http://gmail.google.com/support/bin/answer.py?answer=13287'))),
   );
   // Only display the option if openssl is installed.
@@ -91,14 +91,14 @@ function smtp_admin_settings() {
   }
   // If openssl is not installed, use normal protocol.
   else {
-    variable_set('smtp_protocol', 'standard');
+    config_set('smtp.settings', 'smtp_protocol', 'standard');
     $encryption_options = array('standard' => t('No'));
     $encryption_description = t('Your PHP installation does not have SSL enabled. See the !url page on php.net for more information. Gmail requires SSL.', array('!url' => l(t('OpenSSL Functions'), 'http://php.net/openssl')));
   }
   $form['server']['smtp_protocol'] = array(
     '#type'          => 'select',
     '#title'         => t('Use encrypted protocol'),
-    '#default_value' => variable_get('smtp_protocol', 'standard'),
+    '#default_value' => config_get('smtp.settings', 'smtp_protocol'),
     '#options'       => $encryption_options,
     '#description'   => $encryption_description,
   );
@@ -111,13 +111,13 @@ function smtp_admin_settings() {
   $form['auth']['smtp_username'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Username'),
-    '#default_value' => variable_get('smtp_username', ''),
+    '#default_value' => config_get('smtp.settings', 'smtp_username'),
     '#description'   => t('SMTP Username.'),
   );
   $form['auth']['smtp_password'] = array(
     '#type'          => 'password',
     '#title'         => t('Password'),
-    '#default_value' => variable_get('smtp_password', ''),
+    '#default_value' => config_get('smtp.settings', 'smtp_password'),
     '#description'   => t('SMTP password. If you have already entered your password before, you should leave this field blank, unless you want to change the stored password.'),
   );
 
@@ -128,32 +128,32 @@ function smtp_admin_settings() {
   $form['email_options']['smtp_from'] = array(
     '#type'          => 'textfield',
     '#title'         => t('E-mail from address'),
-    '#default_value' => variable_get('smtp_from', ''),
+    '#default_value' => config_get('smtp.settings', 'smtp_from'),
     '#description'   => t('The e-mail address that all e-mails will be from.'),
   );
   $form['email_options']['smtp_fromname'] = array(
     '#type'          => 'textfield',
     '#title'         => t('E-mail from name'),
-    '#default_value' => variable_get('smtp_fromname', ''),
-    '#description'   => t('The name that all e-mails will be from. If left blank will use the site name of:') . ' ' . variable_get('site_name', 'Drupal powered site'),
+    '#default_value' => config_get('smtp.settings', 'smtp_fromname'),
+    '#description'   => t('The name that all e-mails will be from. If left blank will use the site name of:') . ' ' . config_get('smtp.settings', 'site_name'),
   );
   $form['email_options']['smtp_allowhtml'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Allow to send e-mails formated as Html'),
-    '#default_value' => variable_get('smtp_allowhtml', 0),
+    '#default_value' => config_get('smtp.settings', 'smtp_allowhtml'),
     '#description'   => t('Checking this box will allow Html formated e-mails to be sent with the SMTP protocol.'),
   );
 
   // If an address was given, send a test e-mail message.
-  $test_address = variable_get('smtp_test_address', '');
+  $test_address = config_get('smtp.settings', 'smtp_test_address');
   if ($test_address != '') {
     // Clear the variable so only one message is sent.
-    variable_del('smtp_test_address');
+    config_set('smtp.settings', 'smtp_test_address', '');
     global $language;
-    $params['subject'] = t('Drupal SMTP test e-mail');
+    $params['subject'] = t('Backdrop SMTP test e-mail');
     $params['body']    = array(t('If you receive this message it means your site is capable of using SMTP to send e-mail.'));
-    drupal_mail('smtp', 'smtp-test', $test_address, $language, $params);
-    drupal_set_message(t('A test e-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => l(t('check the logs'), 'admin/reports/dblog'))));
+    backdrop_mail('smtp', 'smtp-test', $test_address, $language, $params);
+    backdrop_set_message(t('A test e-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => l(t('check the logs'), 'admin/reports/dblog'))));
   }
   $form['email_test'] = array(
     '#type'  => 'fieldset',
@@ -169,13 +169,20 @@ function smtp_admin_settings() {
   $form['smtp_debugging'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Enable debugging'),
-    '#default_value' => variable_get('smtp_debugging', 0),
+    '#default_value' => config_get('smtp.settings', 'smtp_debugging'),
     '#description'   => t('Checking this box will print SMTP messages from the server for every e-mail that is sent.'),
   );
 
   $form['#submit'][] = 'smtp_admin_settings_form_submit';
 
-  return system_settings_form($form);
+  // Add a submit button
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+  // Return the form!
+  return $form;
 }  //  End of smtp_admin_settings().
 
 
@@ -206,7 +213,7 @@ function smtp_admin_settings_validate($form, &$form_state) {
     $form_state['values']['smtp_password'] = '';
   }
 
-  // A little hack. When form is presentend, the password is not shown (Drupal way of doing).
+  // A little hack. When form is presentend, the password is not shown (Backdrop way of doing).
   // So, if user submits the form without changing the password, we must prevent it from being reset.
   elseif (empty($form_state['values']['smtp_password'])) {
     unset($form_state['values']['smtp_password']);
@@ -219,21 +226,30 @@ function smtp_admin_settings_validate($form, &$form_state) {
 function smtp_admin_settings_form_submit($form, &$form_state) {
   // Check if SMTP status has been changed.
   if (
-    (!variable_get('smtp_on', FALSE) && $form_state['values']['smtp_on']) ||
-    (variable_get('smtp_on', FALSE) && !$form_state['values']['smtp_on'])
+    (!config_get('smtp.settings', 'smtp_on') && $form_state['values']['smtp_on']) ||
+    (config_get('smtp.settings', 'smtp_on') && !$form_state['values']['smtp_on'])
   ) {
-    $mail_modes = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+    $mail_modes = config_get('smtp.settings', 'mail_system');
 
     // Turning on.
     if ($form_state['values']['smtp_on']) {
-      variable_set('smtp_previous_mail_system', $mail_modes['default-system']);
+      config_set('smtp.settings', 'smtp_previous_mail_system', $mail_modes['default-system']);
       $mail_modes['default-system'] = 'SmtpMailSystem';
     }
     // Turning off.
     else {
-      $mail_modes['default-system'] = variable_get('smtp_previous_mail_system', 'DefaultMailSystem');
+      $mail_modes['default-system'] = config_get('smtp.settings', 'smtp_previous_mail_system');
     }
 
-    variable_set('mail_system', $mail_modes);
+    config_set('smtp.settings', 'mail_system', $mail_modes);
   }
+  
+$config = config('smtp.settings');
+foreach ($form_state['values'] as $key => $value)
+{
+$config->set($key, $value);
+}
+
+$config->save();
+backdrop_set_message(t('The configuration options have been saved.'));
 }

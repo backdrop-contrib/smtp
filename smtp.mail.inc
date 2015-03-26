@@ -6,7 +6,7 @@
  */
 
 /**
-* Modify the drupal mail system to use smtp when sending emails.
+* Modify the Backdrop mail system to use smtp when sending emails.
 * Include the option to choose between plain text or HTML
 */
 class SmtpMailSystem implements MailSystemInterface {
@@ -23,14 +23,14 @@ class SmtpMailSystem implements MailSystemInterface {
    *   The formatted $message.
    */
   public function format(array $message) {
-    $this->AllowHtml = variable_get('smtp_allowhtml', 0);
+    $this->AllowHtml = config_get('smtp.settings', 'smtp_allowhtml');
     // Join the body array into one string.
     $message['body'] = implode("\n\n", $message['body']);
     if ($this->AllowHtml == 0) {
       // Convert any HTML to plain-text.
-      $message['body'] = drupal_html_to_text($message['body']);
+      $message['body'] = backdrop_html_to_text($message['body']);
       // Wrap the mail body for sending.
-      $message['body'] = drupal_wrap_mail($message['body']);
+      $message['body'] = backdrop_wrap_mail($message['body']);
     }
     return $message;
   }
@@ -38,7 +38,7 @@ class SmtpMailSystem implements MailSystemInterface {
   /**
    * Send the e-mail message.
    *
-   * @see drupal_mail()
+   * @see backdrop_mail()
    *
    * @param $message
    *   A message array, as described in hook_mail_alter().
@@ -57,21 +57,21 @@ class SmtpMailSystem implements MailSystemInterface {
     $mailer = new PHPMailer();
 
     // Turn on debugging, if requested.
-    if (variable_get('smtp_debugging', 0) == 1) {
+    if (config_get('smtp.settings', 'smtp_debugging') == 1) {
       $mailer->SMTPDebug = TRUE;
     }
 
     // Set the from name.
-    if (variable_get('smtp_fromname', '') != '') {
-      $from_name = variable_get('smtp_fromname', '');
+    if (config_get('smtp.settings', 'smtp_fromname') != '') {
+      $from_name = config_get('smtp.settings', 'smtp_fromname');
     }
     else {
       // If value is not defined in settings, use site_name.
-      $from_name = variable_get('site_name', '');
+      $from_name = config_get('smtp.settings', 'site_name');
     }
 
     //Hack to fix reply-to issue.
-    $properfrom = variable_get('site_mail', '');
+    $properfrom = config_get('smtp.settings', 'site_mail');
     if (!empty($properfrom)) {
       $headers['From'] = $properfrom;
     }
@@ -89,10 +89,10 @@ class SmtpMailSystem implements MailSystemInterface {
 
     if ($from == NULL || $from == '') {
       // If from e-mail address is blank, use smtp_from config option.
-      if (($from = variable_get('smtp_from', '')) == '') {
+      if (($from = config_get('smtp.settings', 'smtp_from')) == '') {
         // If smtp_from config option is blank, use site_email.
-        if (($from = variable_get('site_mail', '')) == '') {
-          drupal_set_message(t('There is no submitted from address.'), 'error');
+        if (($from = config_get('smtp.settings', 'site_mail')) == '') {
+          backdrop_set_message(t('There is no submitted from address.'), 'error');
           watchdog('smtp', 'There is no submitted from address.', array(), WATCHDOG_ERROR);
           return FALSE;
         }
@@ -105,7 +105,7 @@ class SmtpMailSystem implements MailSystemInterface {
       $from      = preg_replace("/(.*)\<(.*)\>/i", '$2', $from); // It gives: name@domain.tld
     }
     elseif (!valid_email_address($from)) {
-      drupal_set_message(t('The submitted from address (@from) is not valid.', array('@from' => $from)), 'error');
+      backdrop_set_message(t('The submitted from address (@from) is not valid.', array('@from' => $from)), 'error');
       watchdog('smtp', 'The submitted from address (@from) is not valid.', array('@from' => $from), WATCHDOG_ERROR);
       return FALSE;
     }
@@ -136,11 +136,11 @@ class SmtpMailSystem implements MailSystemInterface {
     // accordingly.
     foreach ($headers as $key => $value) {
       //watchdog('error', 'Key: ' . $key . ' Value: ' . $value);
-      switch (drupal_strtolower($key)) {
+      switch (backdrop_strtolower($key)) {
         case 'from':
           if ($from == NULL or $from == '') {
             // If a from value was already given, then set based on header.
-            // Should be the most common situation since drupal_mail moves the
+            // Should be the most common situation since backdrop_mail moves the
             // from to headers.
             $from           = $value;
             $mailer->From     = $value;
@@ -155,13 +155,13 @@ class SmtpMailSystem implements MailSystemInterface {
           $vars = explode(';', $value);
           foreach ($vars as $i => $var) {
             if ($cut = strpos($var, '=')) {
-              $new_var = trim(drupal_strtolower(drupal_substr($var, $cut + 1)));
-              $new_key = trim(drupal_substr($var, 0, $cut));
+              $new_var = trim(backdrop_strtolower(backdrop_substr($var, $cut + 1)));
+              $new_key = trim(backdrop_substr($var, 0, $cut));
               unset($vars[$i]);
               $vars[$new_key] = $new_var;
             }
           }
-          // Set the charset based on the provided value, otherwise set it to UTF-8 (which is Drupals internal default).
+          // Set the charset based on the provided value, otherwise set it to UTF-8 (which is Backdrops internal default).
           $mailer->CharSet = isset($vars['charset']) ? $vars['charset'] : 'UTF-8';
           // If $vars is empty then set an empty value at index 0 to avoid a PHP warning in the next statement
           $vars[0] = isset($vars[0])?$vars[0]:'';
@@ -200,7 +200,7 @@ class SmtpMailSystem implements MailSystemInterface {
             break;
             default:
               // Everything else is unsuppored by PHPMailer.
-              drupal_set_message(t('The %header of your message is not supported by PHPMailer and will be sent as text/plain instead.', array('%header' => "Content-Type: $value")), 'error');
+              backdrop_set_message(t('The %header of your message is not supported by PHPMailer and will be sent as text/plain instead.', array('%header' => "Content-Type: $value")), 'error');
               watchdog('smtp', 'The %header of your message is not supported by PHPMailer and will be sent as text/plain instead.', array('%header' => "Content-Type: $value"), WATCHDOG_ERROR);
 
               // Force the Content-Type to be text/plain.
@@ -381,7 +381,7 @@ class SmtpMailSystem implements MailSystemInterface {
                 // Clean up the text.
                 $body_part2 = trim($this->_remove_headers(trim($body_part2)));
                 // Check whether the encoding is base64, and if so, decode it.
-                if (drupal_strtolower($body_part2_encoding) == 'base64') {
+                if (backdrop_strtolower($body_part2_encoding) == 'base64') {
                   // Include it as part of the mail object.
                   $mailer->Body = base64_decode($body_part2);
                   // Ensure the whole message is recoded in the base64 format.
@@ -429,29 +429,29 @@ class SmtpMailSystem implements MailSystemInterface {
 
             if (file_exists($file_path)) {
               if (!$mailer->AddAttachment($file_path, $file_name, $file_encoding, $file_type)) {
-                drupal_set_message(t('Attahment could not be found or accessed.'));
+                backdrop_set_message(t('Attahment could not be found or accessed.'));
               }
             }
             else {
               // Clean up the text.
               $body_part = trim($this->_remove_headers(trim($body_part)));
 
-              if (drupal_strtolower($file_encoding) == 'base64') {
+              if (backdrop_strtolower($file_encoding) == 'base64') {
                 $attachment = base64_decode($body_part);
               }
-              elseif (drupal_strtolower($file_encoding) == 'quoted-printable') {
+              elseif (backdrop_strtolower($file_encoding) == 'quoted-printable') {
                 $attachment = quoted_printable_decode($body_part);
               }
               else {
                 $attachment = $body_part;
               }
 
-              $attachment_new_filename = drupal_tempnam('temporary://', 'smtp');
+              $attachment_new_filename = backdrop_tempnam('temporary://', 'smtp');
               $file_path = file_save_data($attachment, $attachment_new_filename, FILE_EXISTS_REPLACE);
-              $real_path = drupal_realpath($file_path->uri);
+              $real_path = backdrop_realpath($file_path->uri);
 
               if (!$mailer->AddAttachment($real_path, $file_name)) {
-                drupal_set_message(t('Attachment could not be found or accessed.'));
+                backdrop_set_message(t('Attachment could not be found or accessed.'));
               }
             }
           }
@@ -478,8 +478,8 @@ class SmtpMailSystem implements MailSystemInterface {
     }
 
     // Set the authentication settings.
-    $username = variable_get('smtp_username', '');
-    $password = variable_get('smtp_password', '');
+    $username = config_get('smtp.settings', 'smtp_username');
+    $password = config_get('smtp.settings', 'smtp_password');
 
     // If username and password are given, use SMTP authentication.
     if ($username != '' && $password != '') {
@@ -490,7 +490,7 @@ class SmtpMailSystem implements MailSystemInterface {
 
 
     // Set the protocol prefix for the smtp host.
-    switch (variable_get('smtp_protocol', 'standard')) {
+    switch (config_get('smtp.settings', 'smtp_protocol')) {
       case 'ssl':
         $mailer->SMTPSecure = 'ssl';
         break;
@@ -505,8 +505,8 @@ class SmtpMailSystem implements MailSystemInterface {
 
 
     // Set other connection settings.
-    $mailer->Host = variable_get('smtp_host', '') . ';' . variable_get('smtp_hostbackup', '');
-    $mailer->Port = variable_get('smtp_port', '25');
+    $mailer->Host = config_get('smtp.settings', 'smtp_host') . ';' . config_get('smtp.settings', 'smtp_hostbackup');
+    $mailer->Port = config_get('smtp.settings', 'smtp_port');
     $mailer->Mailer = 'smtp';
 
     $mailerArr = array(
@@ -514,7 +514,7 @@ class SmtpMailSystem implements MailSystemInterface {
       'to' => $to,
       'from' => $from,
     );
-    if (variable_get('smtp_queue', FALSE)) {
+    if (config_get('smtp.settings', 'smtp_queue')) {
       watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
       smtp_send_queue($mailerArr);
     }
@@ -528,7 +528,7 @@ class SmtpMailSystem implements MailSystemInterface {
   /**
    * Splits the input into parts based on the given boundary.
    *
-   * Swiped from Mail::MimeDecode, with modifications based on Drupal's coding
+   * Swiped from Mail::MimeDecode, with modifications based on Backdrop's coding
    * standards and this bug report: http://pear.php.net/bugs/bug.php?id=6495
    *
    * @param input
@@ -540,7 +540,7 @@ class SmtpMailSystem implements MailSystemInterface {
    */
   protected function _boundary_split($input, $boundary) {
     $parts       = array();
-    $bs_possible = drupal_substr($boundary, 2, -2);
+    $bs_possible = backdrop_substr($boundary, 2, -2);
     $bs_check    = '\"' . $bs_possible . '\"';
 
     if ($boundary == $bs_check) {
@@ -621,11 +621,11 @@ class SmtpMailSystem implements MailSystemInterface {
     $search_start     = strpos($source, $target) + 1;
     $first_character  = strpos($source, $beginning_character, $search_start) + 1;
     $second_character = strpos($source, $ending_character, $first_character) + 1;
-    $substring        = drupal_substr($source, $first_character, $second_character - $first_character);
-    $string_length    = drupal_strlen($substring) - 1;
+    $substring        = backdrop_substr($source, $first_character, $second_character - $first_character);
+    $string_length    = backdrop_strlen($substring) - 1;
 
     if ($substring[$string_length] == $ending_character) {
-      $substring = drupal_substr($substring, 0, $string_length);
+      $substring = backdrop_substr($substring, 0, $string_length);
     }
 
     return $substring;

@@ -1,6 +1,7 @@
 name = SMTP Authentication Support
 description = "Allow for site emails to be sent through an SMTP server of your choice."
-core = 7.x
+version = BACKDROP_VERSION
+backdrop = 1.x
 package = Mail
 configure = admin/config/system/smtp
 files[] = smtp.mail.inc

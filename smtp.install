@@ -9,45 +9,25 @@
  * Implements hook_install().
  */
  function smtp_install() {
-   variable_set('smtp_on', 0);
+   config_set('smtp.settings', 'smtp_on', 0);
  }
-
-/**
- * Implements hook_uninstall().
- */
-function smtp_uninstall() {
-  variable_del('smtp_from');
-  variable_del('smtp_fromname');
-  variable_del('smtp_host');
-  variable_del('smtp_hostbackup');
-  variable_del('smtp_on');
-  variable_del('smtp_password');
-  variable_del('smtp_port');
-  variable_del('smtp_protocol');
-  variable_del('smtp_test_address');
-  variable_del('smtp_username');
-
-  if (variable_get('smtp_library', '') == drupal_get_path('module', 'smtp') . '/smtp.module') {
-    variable_del('smtp_library');
-  }
-}
 
 /**
  * Implements hook_disable().
  */
 function smtp_disable() {
-  $mail_modes = variable_get('mail_system');
+  $mail_modes = config_get('smtp.settings', 'mail_system');
   $mail_modes['default-system'] = 'DefaultMailSystem';
-  variable_set('mail_system', $mail_modes);
+  config_set('smtp.settings', 'mail_system', $mail_modes);
 }
 
 /**
  * Implements hook_update_N().
- * Upgrade to Drupal 7.x
+ * Upgrade to Backdrop 7.x
  */
 function smtp_update_7000() {
-  if (variable_get('smtp_on', 0) != 0) {
-    variable_set('mail_system', array('default-system' => 'SmtpMailSystem'));
+  if (config_get('smtp.settings', 'smtp_on') != 0) {
+    config_set('smtp.settings', 'mail_system', array('default-system' => 'SmtpMailSystem'));
   }
 }
 
@@ -57,9 +37,56 @@ function smtp_update_7000() {
  * Back to default mail system if the status flag is off.
  */
 function smtp_update_7100() {
-  $mail_modes = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
-  if ($mail_modes['default-system'] == 'SmtpMailSystem' && !variable_get('smtp_on', FALSE)) {
+  $mail_modes = config_get('smtp.settings', 'mail_system');
+  if ($mail_modes['default-system'] == 'SmtpMailSystem' && !config_get('smtp.settings', 'smtp_on')) {
     $mail_modes['default-system'] = 'DefaultMailSystem';
-    variable_set('mail_system', $mail_modes);
+    config_set('smtp.settings', 'mail_system', $mail_modes);
   }
+}
+
+
+
+
+function smtp_update_1000() {
+  $config = config('smtp.settings');
+
+  // migrate variables
+  $config->set('smtp_library', update_variable_get('smtp_library'));
+  $config->set('smtp_on', update_variable_get('smtp_on'));
+  $config->set('smtp_queue', update_variable_get('smtp_queue'));
+  $config->set('smtp_host', update_variable_get('smtp_host'));
+  $config->set('smtp_hostbackup', update_variable_get('smtp_hostbackup'));
+  
+  $config->set('smtp_port', update_variable_get('smtp_port'));
+  $config->set('smtp_protocol', update_variable_get('smtp_protocol'));
+  $config->set('smtp_username', update_variable_get('smtp_username'));
+  $config->set('smtp_password', update_variable_get('smtp_password'));
+  $config->set('smtp_from', update_variable_get('smtp_from'));
+  
+  $config->set('smtp_fromname', update_variable_get('smtp_fromname'));
+  $config->set('smtp_allowhtml', update_variable_get('smtp_allowhtml'));
+  $config->set('smtp_test_address', update_variable_get('smtp_test_address'));
+  $config->set('smtp_debugging', update_variable_get('smtp_debugging'));
+  $config->set('smtp_previous_mail_system', update_variable_get('smtp_previous_mail_system'));
+  
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('smtp_library');
+  update_variable_del('smtp_on');
+  update_variable_del('smtp_queue');
+  update_variable_del('smtp_host');
+  update_variable_del('smtp_hostbackup');
+
+  update_variable_del('smtp_port');
+  update_variable_del('smtp_protocol');
+  update_variable_del('smtp_username');
+  update_variable_del('smtp_password');
+  update_variable_del('smtp_from');
+  
+  update_variable_del('smtp_fromname');
+  update_variable_del('smtp_allowhtml');
+  update_variable_del('smtp_test_address');
+  update_variable_del('smtp_debugging');
+  update_variable_del('smtp_previous_mail_system');
 }
