@@ -27,7 +27,9 @@ TESTED
 -----
 
 @todo
-This module has NOT BEEN TESTED and is being ported to Backdrop.  It may work.
+
+This module has been installed/uninstalled/installed on Backdrop in a MAMP localhost and does not break the system. Saving options and the logs/pages seem to work. This module requires an active 3rd party SMTP server to see the results of its functionality and has not been tested in that regards yet.
+
 
 KNOWN ISSUES
 ---------------------
