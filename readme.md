@@ -1,15 +1,20 @@
 SMTP AUTHENTICATION SUPPORT
-===========
+===================
 
 CONTENTS OF THIS FILE
 ---------------------
 
  - Introduction
+ - Tested
+ - Known Issues
+ - Special Thanks
  - Requirements
  - Installation
- - Permissions
+ - Coming From Drupal?
  - Usage
- - Sponsors
+ - License
+ - Credits
+ - Maintainers
 
 INTRODUCTION
 ------------
@@ -18,21 +23,38 @@ This module adds SMTP functionality to your site.
 
 This module allows Drupal to bypass the PHP mail() function and send email directly to an SMTP server. The module supports SMTP authentication and can even connect to servers using SSL if supported by PHP.
 
-Maintenance sponsored by Chuva Inc.
+TESTED
+-----
+
+Email Modules
+The following modules ported to Backdrop are inter-related to the mailing system:
+
+simplenews
+
+simplenews_scheduler
+
+mimemail
+
+mandrill
+
+mailsystem
+
+smtp
+
+They have been converted from Drupal to Backdrop but are still not working.  They need debugging into what was changed between the systems and how to fix it. I, biolithic the one who did the intial conversion, lack the heart or time in the spring of 2015 to debug them currently.
+
+Do you have a need or desire for email newsletters?  You are welcome to submit pull requests to finish these modules.  It may not be a lot of work.  Thanks!
+
+KNOWN ISSUES
+---------------------
 
 This module uses the smtp and mail class's from PHPMailer.
 https://github.com/PHPMailer/PHPMailer
 
-TESTED
------
+SPECIAL THANKS
+--------------
 
-@todo
-This module has NOT BEEN TESTED and is being ported to Backdrop.  It may work.
-
-KNOWN ISSUES
----------------------
-@todo
-
+Maintenance sponsored by Chuva Inc. <http://chuva-inc.com/>
 
 REQUIREMENTS
 ------------
@@ -48,10 +70,13 @@ This branch requires the Mail System module.
 INSTALLATION
 ------------
 
-SMTP can be installed via the standard Backdrop installation process
-(http://drupal.org/documentation/install/modules-themes/modules-7).
+Install this module using the official Backdrop CMS instructions at https://backdropcms.org/guide/modules
 
-Fill in required settings on the Administer -> Configuration -> System -> SMTP Authentication Support page.
+
+COMING FROM DRUPAL?
+-------------------
+
+Nothing substantially different.
 
 PERMISSIONS
 ------------
@@ -61,7 +86,8 @@ PERMISSIONS
 
 USAGE
 -----
-@todo
+
+<https://www.drupal.org/node/1188598>
 
 This module sends email by connecting to an SMTP server.  Therefore, you need
 to have access to an SMTP server for this module to work.
@@ -81,25 +107,24 @@ will display the options in the modules settings page.
 
 Sending mail to Gmail requires SSL or TLS.
 
-License
+LICENSE
 -------
 
-This project is GPL v2 software. See the LICENSE.txt file in this directory for
-complete text.
+This project is GPL v2 software. See the LICENSE.txt file in this directory for complete text.
 
-Maintainers
+CREDITS
+-----------
+
+This module is based on the SMTP module for Drupal, originally written and maintained by a large number of contributors, including:
+
+- José San Martin <https://www.drupal.org/u/jos%C3%A9-san-martin>
+
+- wundo <https://www.drupal.org/u/wundo>
+
+MAINTAINERS
 -----------
 
 - seeking
-
-Current Maintainers on Drupal:
-
-Supporting organizations:
-Chuva Inc. <http://chuva-inc.com/>
-
-Maintaining this module:
-
-<https://www.drupal.org/node/1188598>
 
 Ported to Backdrop by:
 

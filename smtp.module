@@ -16,14 +16,27 @@
  */
 
 /**
- * Implements hook_help().
+ * Implements hook_config_info().
  */
-function smtp_help($path, $arg) {
-  switch ($path) {
-    case 'admin/help#smtp':
-      return t('Allow for site emails to be sent through an SMTP server of your choice.');
-  }
+function smtp_config_info() {
+  $prefixes['smtp.settings'] = array(
+    'label' => t('smtp settings'),
+    'group' => t('smtp'),
+  );
+  return $prefixes;
+} 
+
+/**
+ * Implements hook_autoload_info().
+ */
+function smtp_autoload_info() {
+  return array(
+    'SmtpMailSystem' => 'smtp.mail.inc',
+    'PHPMailer' => 'smtp.phpmailer.inc',
+    'SMTP' => 'smtp.transport.inc',
+  );
 }
+
 
 /**
  * Implements hook_menu().
