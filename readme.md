@@ -26,6 +26,7 @@ This module allows Drupal to bypass the PHP mail() function and send email direc
 TESTED
 -----
 
+<<<<<<< HEAD
 Email Modules
 The following modules ported to Backdrop are inter-related to the mailing system:
 
@@ -44,6 +45,12 @@ smtp
 They have been converted from Drupal to Backdrop but are still not working.  They need debugging into what was changed between the systems and how to fix it. I, biolithic the one who did the intial conversion, lack the heart or time in the spring of 2015 to debug them currently.
 
 Do you have a need or desire for email newsletters?  You are welcome to submit pull requests to finish these modules.  It may not be a lot of work.  Thanks!
+=======
+@todo
+
+This module has been installed/uninstalled/installed on Backdrop in a MAMP localhost and does not break the system. Saving options and the logs/pages seem to work. This module requires an active 3rd party SMTP server to see the results of its functionality and has not been tested in that regards yet.
+
+>>>>>>> 336c344942998019130ecb1c9fbdb9cbef1bbf27
 
 KNOWN ISSUES
 ---------------------
