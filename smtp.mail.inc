@@ -514,7 +514,9 @@ class SmtpMailSystem implements MailSystemInterface {
       'to' => $to,
       'from' => $from,
     );
-    if (variable_get('smtp_queue', FALSE)) {
+    if (variable_get('smtp_queue', FALSE)
+      && (!isset($message['params']['skip_queue']) || !$message['params']['skip_queue'])
+    ) {
       watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
       smtp_send_queue($mailerArr);
     }
