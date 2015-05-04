@@ -105,7 +105,7 @@ function _smtp_mailer_send($variables) {
   $mailer = $variables['mailer'];
   $to = $variables['to'];
   $from = $variables['from'];
-  $logging = variable_get('smtp_debugging', SMTP_LOGGING_ALL);
+  $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
 
   // Let the people know what is going on.
   if ($logging == SMTP_LOGGING_ALL) {

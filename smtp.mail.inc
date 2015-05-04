@@ -56,6 +56,8 @@ class SmtpMailSystem implements MailSystemInterface {
     // Create a new PHPMailer object - autoloaded from registry.
     $mailer = new PHPMailer();
 
+    $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
+
     // Turn on debugging, if requested.
     if (variable_get('smtp_debugging', 0) == 1) {
       $mailer->SMTPDebug = TRUE;
@@ -69,8 +71,6 @@ class SmtpMailSystem implements MailSystemInterface {
       // If value is not defined in settings, use site_name.
       $from_name = variable_get('site_name', '');
     }
-
-    $logging = variable_get('smtp_debugging', SMTP_LOGGING_ALL);
 
     //Hack to fix reply-to issue.
     $properfrom = variable_get('site_mail', '');
