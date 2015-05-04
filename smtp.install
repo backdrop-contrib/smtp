@@ -75,10 +75,10 @@ function smtp_update_7100() {
 function smtp_update_7101() {
   $old_debugging_value = variable_get('smtp_debugging', 0);
 
+  $logging = SMTP_LOGGING_NONE;
+
   if ($old_debugging_value == 1) {
-    $logging = 2;
-  } else {
-    $logging = 0;
+    $logging = SMTP_LOGGING_ERRORS;
   }
 
   variable_set('smtp_debugging', $logging);
