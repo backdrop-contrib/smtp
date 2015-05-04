@@ -38,6 +38,8 @@ function smtp_admin_settings() {
     }
   }
 
+  $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
+
   $form['onoff'] = array(
     '#type'  => 'fieldset',
     '#title' => t('Install options'),
@@ -80,6 +82,7 @@ function smtp_admin_settings() {
     '#default_value' => variable_get('smtp_port', '25'),
     '#description'   => t('The default SMTP port is 25, if that is being blocked try 80. Gmail uses 465. See !url for more information on configuring for use with Gmail.', array('!url' => l(t('this page'), 'http://gmail.google.com/support/bin/answer.py?answer=13287'))),
   );
+
   // Only display the option if openssl is installed.
   if (function_exists('openssl_open')) {
     $encryption_options = array(
@@ -153,13 +156,15 @@ function smtp_admin_settings() {
     $params['subject'] = t('Drupal SMTP test e-mail');
     $params['body']    = array(t('If you receive this message it means your site is capable of using SMTP to send e-mail.'));
     drupal_mail('smtp', 'smtp-test', $test_address, $language, $params);
-    if (variable_get('smtp_debugging', SMTP_LOGGING_ALL)) {
+
+    if ($logging === SMTP_LOGGING_NONE) {
       drupal_set_message(t('A test e-mail has been sent to @email.', array('@email' => $test_address)));
     }
     else {
       drupal_set_message(t('A test e-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => l(t('check the logs'), 'admin/reports/dblog'))));
     }
   }
+
   $form['email_test'] = array(
     '#type'  => 'fieldset',
     '#title' => t('Send test e-mail'),
@@ -185,7 +190,7 @@ function smtp_admin_settings() {
     '#type'          => 'select',
     '#title'         => t('Logging'),
     '#options'       => $logging_options,
-    '#default_value' => variable_get('smtp_debugging', SMTP_LOGGING_ALL),
+    '#default_value' => $logging,
     '#description'   => t('Choose the appropriate log level. "Log everything" will log errors and informational messages when an email is sent. "Errors only" will only create a log entry when sending failed. "No logging" will disable all logging for this module.'),
   );
 
