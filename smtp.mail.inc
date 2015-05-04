@@ -70,6 +70,8 @@ class SmtpMailSystem implements MailSystemInterface {
       $from_name = variable_get('site_name', '');
     }
 
+    $logging = variable_get('smtp_debugging', SMTP_LOGGING_ALL);
+
     //Hack to fix reply-to issue.
     $properfrom = variable_get('site_mail', '');
     if (!empty($properfrom)) {
@@ -93,7 +95,9 @@ class SmtpMailSystem implements MailSystemInterface {
         // If smtp_from config option is blank, use site_email.
         if (($from = variable_get('site_mail', '')) == '') {
           drupal_set_message(t('There is no submitted from address.'), 'error');
-          watchdog('smtp', 'There is no submitted from address.', array(), WATCHDOG_ERROR);
+          if ($logging) {
+            watchdog('smtp', 'There is no submitted from address.', array(), WATCHDOG_ERROR);
+          }
           return FALSE;
         }
       }
@@ -106,7 +110,9 @@ class SmtpMailSystem implements MailSystemInterface {
     }
     elseif (!valid_email_address($from)) {
       drupal_set_message(t('The submitted from address (@from) is not valid.', array('@from' => $from)), 'error');
-      watchdog('smtp', 'The submitted from address (@from) is not valid.', array('@from' => $from), WATCHDOG_ERROR);
+      if ($logging) {
+        watchdog('smtp', 'The submitted from address (@from) is not valid.', array('@from' => $from), WATCHDOG_ERROR);
+      }
       return FALSE;
     }
 
@@ -201,8 +207,9 @@ class SmtpMailSystem implements MailSystemInterface {
             default:
               // Everything else is unsuppored by PHPMailer.
               drupal_set_message(t('The %header of your message is not supported by PHPMailer and will be sent as text/plain instead.', array('%header' => "Content-Type: $value")), 'error');
-              watchdog('smtp', 'The %header of your message is not supported by PHPMailer and will be sent as text/plain instead.', array('%header' => "Content-Type: $value"), WATCHDOG_ERROR);
-
+              if ($logging) {
+                watchdog('smtp', 'The %header of your message is not supported by PHPMailer and will be sent as text/plain instead.', array('%header' => "Content-Type: $value"), WATCHDOG_ERROR);
+              }
               // Force the Content-Type to be text/plain.
               $mailer->IsHTML(FALSE);
               $content_type = 'text/plain';
@@ -515,7 +522,9 @@ class SmtpMailSystem implements MailSystemInterface {
       'from' => $from,
     );
     if (variable_get('smtp_queue', FALSE)) {
-      watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
+      if ($logging == SMTP_LOGGING_ALL) {
+        watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
+      }
       smtp_send_queue($mailerArr);
     }
     else {
