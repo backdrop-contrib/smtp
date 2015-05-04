@@ -44,6 +44,7 @@ function smtp_disable() {
 
 /**
  * Implements hook_update_N().
+ *
  * Upgrade to Drupal 7.x
  */
 function smtp_update_7000() {
@@ -66,7 +67,10 @@ function smtp_update_7100() {
 }
 
 /**
- * Implement new SMTP logging behavior.
+ * Implements hook_update_N().
+ *
+ * Updating variable value now that new SMTP logging behavior has been
+ * implemented.
  */
 function smtp_update_7101() {
   $old_debugging_value = variable_get('smtp_debugging', 0);
