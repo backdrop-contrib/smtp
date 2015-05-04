@@ -16,6 +16,7 @@
  * Implements hook_uninstall().
  */
 function smtp_uninstall() {
+  variable_del('smtp_allowhtml');
   variable_del('smtp_from');
   variable_del('smtp_fromname');
   variable_del('smtp_host');
