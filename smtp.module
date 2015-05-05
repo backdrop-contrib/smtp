@@ -16,6 +16,22 @@
  */
 
 /**
+ * SMTP logging -- logging is disabled
+ */
+define('SMTP_LOGGING_NONE', 0);
+
+/**
+ * SMTP logging -- all messages are logged
+ */
+define('SMTP_LOGGING_ALL', 1);
+
+/**
+ * SMTP logging -- only errors are logged
+ */
+define('SMTP_LOGGING_ERRORS', 2);
+
+
+/**
  * Implements hook_help().
  */
 function smtp_help($path, $arg) {
@@ -89,13 +105,18 @@ function _smtp_mailer_send($variables) {
   $mailer = $variables['mailer'];
   $to = $variables['to'];
   $from = $variables['from'];
+  $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
 
   // Let the people know what is going on.
-  watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
+  if ($logging == SMTP_LOGGING_ALL) {
+    watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
+  }
 
   // Try to send e-mail. If it fails, set watchdog entry.
   if (!$mailer->Send()) {
-    watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mailer->ErrorInfo), WATCHDOG_ERROR);
+    if ($logging) {
+      watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mailer->ErrorInfo), WATCHDOG_ERROR);
+    }
     return FALSE;
   }
 
