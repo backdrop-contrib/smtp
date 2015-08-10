@@ -25,6 +25,8 @@ function smtp_uninstall() {
   variable_del('smtp_password');
   variable_del('smtp_port');
   variable_del('smtp_protocol');
+  variable_del('smtp_queue');
+  variable_del('smtp_queue_fail');
   variable_del('smtp_test_address');
   variable_del('smtp_username');
   variable_del('smtp_debugging');

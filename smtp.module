@@ -84,8 +84,14 @@ function smtp_mail($key, &$message, $params) {
 function smtp_cron_queue_info() {
   $queues['smtp_send_queue'] = array(
     'worker callback' => 'smtp_send_queue_runner',
-    'time' => 60, // This is the max run time per cron run in seconds.
+    'time' => 60,
   );
+
+  $queues['smtp_failure_queue'] = array(
+    'worker callback' => 'smtp_failure_queue_runner',
+    'time' => 30,
+  );
+
   return $queues;
 }
 
@@ -97,14 +103,7 @@ function smtp_send_queue($mailerObj) {
   $queue->createItem($mailerObj);
 }
 
-function smtp_send_queue_runner($variables) {
-  _smtp_mailer_send($variables);
-}
-
-function _smtp_mailer_send($variables) {
-  $mailer = $variables['mailer'];
-  $to = $variables['to'];
-  $from = $variables['from'];
+function smtp_send_queue_runner($message) {
   $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
 
   // Let the people know what is going on.
@@ -112,14 +111,46 @@ function _smtp_mailer_send($variables) {
     watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
   }
 
-  // Try to send e-mail. If it fails, set watchdog entry.
-  if (!$mailer->Send()) {
-    if ($logging) {
-      watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', array('@from' => $from, '@to' => $to, '!error_message' => $mailer->ErrorInfo), WATCHDOG_ERROR);
-    }
-    return FALSE;
-  }
+  $mail_system = new SmtpMailSystem();
+  if (!$mail_system->mailWithoutQueue($message)) {
+    $params = array(
+      '@from' => $message['from'],
+      '@to' => $message['to'],
+      '!error_message' => $mailer->ErrorInfo,
+    );
 
-  $mailer->SmtpClose();
-  return TRUE;
+    if (variable_get('smtp_queue_fail', FALSE)) {
+      if ($logging) {
+        watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.', $params, WATCHDOG_ERROR);
+      }
+      smtp_failed_messages($message);
+    }
+    elseif ($logging) {
+      watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', $params, WATCHDOG_ERROR);
+    }
+  }
+}
+
+/**
+ * Store failed messages for later.
+ *
+ * @param array $new_message
+ *
+ * @return array
+ *   All messages that have been saved.
+ */
+function smtp_failed_messages($message) {
+  $queue = DrupalQueue::get('smtp_failure_queue');
+  $queue->createItem($message);
+}
+
+/**
+ * Queue runner for smtp_failure_queue.
+ *
+ * @param $message
+ *   A drupal_mail-formatted message.
+ */
+function smtp_failure_queue_runner($message) {
+  $queue = DrupalQueue::get('smtp_send_queue');
+  $queue->createItem($message);
 }

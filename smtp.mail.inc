@@ -46,6 +46,19 @@ class SmtpMailSystem implements MailSystemInterface {
    *   TRUE if the mail was successfully accepted, otherwise FALSE.
    */
   public function mail(array $message) {
+    if (variable_get('smtp_queue', FALSE)) {
+      smtp_send_queue($message);
+      if (variable_get('smtp_debugging', SMTP_LOGGING_ERRORS) == SMTP_LOGGING_ALL) {
+        watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
+      }
+      return TRUE;
+    }
+    else {
+      return $this->mailWithoutQueue($message);
+    }
+  }
+
+  public function mailWithoutQueue(array $message) {
     $id = $message['id'];
     $to = $message['to'];
     $from = $message['from'];
@@ -516,23 +529,28 @@ class SmtpMailSystem implements MailSystemInterface {
     $mailer->Port = variable_get('smtp_port', '25');
     $mailer->Mailer = 'smtp';
 
-    $mailerArr = array(
-      'mailer' => $mailer,
-      'to' => $to,
-      'from' => $from,
-    );
+    $error = FALSE;
+    if (!$mailer->send()) {
+      $params = array(
+        '@from' => $from,
+        '@to' => $to,
+        '!error_message' => $mailer->ErrorInfo
+      );
 
-    if (variable_get('smtp_queue', FALSE)) {
-      smtp_send_queue($mailerArr);
-      if ($logging == SMTP_LOGGING_ALL) {
-        watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
+      if (variable_get('smtp_queue_fail', FALSE)) {
+        if ($logging) {
+          watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.', $params, WATCHDOG_ERROR);
+        }
+        smtp_failed_messages($message);
+      }
+      elseif ($logging) {
+        $error = TRUE;
+        watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', $params, WATCHDOG_ERROR);
       }
     }
-    else {
-      return _smtp_mailer_send($mailerArr);
-    }
 
-    return TRUE;
+    $mailer->SmtpClose();
+    return !$error;
   }
 
   /**

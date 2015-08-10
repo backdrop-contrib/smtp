@@ -57,6 +57,12 @@ function smtp_admin_settings() {
     '#default_value' => variable_get('smtp_queue', FALSE),
     '#description'   => t('Mails will be sent by drupal queue api.'),
   );
+  $form['onoff']['smtp_queue_fail'] = array(
+    '#type'  => 'checkbox',
+    '#title' => t('Retry sending mail on error.'),
+    '#default_value' => variable_get('smtp_failure_queue', FALSE),
+    '#description'   => t('Mails will be added to the queue and sent by drupal queue api.'),
+  );
 
   $form['server'] = array(
     '#type'  => 'fieldset',
