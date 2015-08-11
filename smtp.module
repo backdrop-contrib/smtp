@@ -109,7 +109,7 @@ function smtp_send_queue_runner($message) {
   // Legacy for mails queued before 7.x-v1.3
   // What was passed to the runner used to be a PHPMailer object, not a message array.
   if (!empty($message['mailer']) && is_object($message['mailer'])) {
-    if (!$mailer->Send()) {
+    if (!$message['mailer']->Send()) {
       if ($logging == SMTP_LOGGING_ALL || $logging == SMTP_LOGGING_ERRORS) {
         watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.',
           array(
