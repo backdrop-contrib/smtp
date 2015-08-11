@@ -135,12 +135,12 @@ function smtp_send_queue_runner($message) {
     );
 
     if (variable_get('smtp_queue_fail', FALSE)) {
-      if ($logging) {
+      if ($logging == SMTP_LOGGING_ALL || $logging == SMTP_LOGGING_ERRORS) {
         watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.', $params, WATCHDOG_ERROR);
       }
       smtp_failed_messages($message);
     }
-    elseif ($logging) {
+    elseif ($logging == SMTP_LOGGING_ALL || $logging == SMTP_LOGGING_ERRORS) {
       watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', $params, WATCHDOG_ERROR);
     }
   }
