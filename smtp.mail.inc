@@ -46,7 +46,8 @@ class SmtpMailSystem implements MailSystemInterface {
    *   TRUE if the mail was successfully accepted, otherwise FALSE.
    */
   public function mail(array $message) {
-    if (variable_get('smtp_queue', FALSE)) {
+    if (variable_get('smtp_queue', FALSE)
+       && (!isset($message['params']['skip_queue']) || !$message['params']['skip_queue'])) {
       smtp_send_queue($message);
       if (variable_get('smtp_debugging', SMTP_LOGGING_ERRORS) == SMTP_LOGGING_ALL) {
         watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
