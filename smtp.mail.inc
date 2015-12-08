@@ -397,7 +397,7 @@ class SmtpMailSystem implements MailSystemInterface {
               // If plain/html within the body part, add it to $mailer->Body.
               elseif (strpos($body_part2, 'text/html')) {
                 // Get the encoding.
-                $body_part2_encoding = $this->_get_substring($body_part2, 'Content-Transfer-Encoding', ':', "\n");
+                $body_part2_encoding = trim($this->_get_substring($body_part2, 'Content-Transfer-Encoding', ':', "\n"));
                 // Clean up the text.
                 $body_part2 = trim($this->_remove_headers(trim($body_part2)));
                 // Check whether the encoding is base64, and if so, decode it.
