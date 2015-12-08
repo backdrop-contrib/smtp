@@ -7,7 +7,7 @@
  */
 
 /*~ class.phpmailer.php
-Orginal release information:
+Original release information:
 .---------------------------------------------------------------------------.
 |  Software: PHPMailer - PHP email class                                    |
 |   Version: 5.1                                                            |

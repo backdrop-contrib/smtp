@@ -148,9 +148,9 @@ function smtp_admin_settings() {
   );
   $form['email_options']['smtp_allowhtml'] = array(
     '#type'          => 'checkbox',
-    '#title'         => t('Allow to send e-mails formated as Html'),
+    '#title'         => t('Allow to send e-mails formatted as Html'),
     '#default_value' => variable_get('smtp_allowhtml', 0),
-    '#description'   => t('Checking this box will allow Html formated e-mails to be sent with the SMTP protocol.'),
+    '#description'   => t('Checking this box will allow Html formatted e-mails to be sent with the SMTP protocol.'),
   );
 
   // If an address was given, send a test e-mail message.
