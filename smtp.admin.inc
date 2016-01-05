@@ -12,28 +12,18 @@
  *   An array containing form items to place on the module settings page.
  */
 function smtp_admin_settings() {
-  // Override the smtp_library variable.
-  if (module_exists('mimemail') &&
-      strpos(config_get('smtp.settings', 'smtp_library'), 'mimemail')) {
-    // don't touch smtp_library
+  if (config_get('smtp.settings', 'smtp_on')) {
+    $smtp_path = backdrop_get_filename('module', 'smtp');
+    if ($smtp_path) {
+      backdrop_set_message(t('SMTP module is active.'));
+    }
+    // If backdrop can't find the path to the module, display an error.
+    else {
+      backdrop_set_message(t("SMTP module error: Can't find file."), 'error');
+    }
   }
   else {
-    if (config_get('smtp.settings', 'smtp_on')) {
-      $smtp_path = backdrop_get_filename('module', 'smtp');
-      if ($smtp_path) {
-        config_set('smtp.settings', 'smtp_library', $smtp_path);
-        backdrop_set_message(t('SMTP module is active.'));
-      }
-      // If backdrop can't find the path to the module, display an error.
-      else {
-        backdrop_set_message(t("SMTP module error: Can't find file."), 'error');
-      }
-    }
-    // If this module is turned off, delete the variable.
-    else {
-      config_set('smtp.settings', 'smtp_library', '');
-      backdrop_set_message(t('SMTP module is INACTIVE.'));
-    }
+    backdrop_set_message(t('SMTP module is INACTIVE.'));
   }
 
   $form['onoff'] = array(
@@ -243,7 +233,6 @@ function smtp_admin_settings_form_submit($form, &$form_state) {
     config_set('system.mail', 'mail_system', $mail_modes);
   }
 
-  $config->set('smtp_library', $form_state['values']['smtp_library']);
   $config->set('smtp_on', $form_state['values']['smtp_on']);
   $config->set('smtp_queue', $form_state['values']['smtp_queue']);
   $config->set('smtp_host', $form_state['values']['smtp_host']);
@@ -251,14 +240,14 @@ function smtp_admin_settings_form_submit($form, &$form_state) {
   $config->set('smtp_port', $form_state['values']['smtp_port']);
   $config->set('smtp_protocol', $form_state['values']['smtp_protocol']);
   $config->set('smtp_username', $form_state['values']['smtp_username']);
-  $config->set('smtp_password', $form_state['values']['smtp_password']);
+  if (isset($form_state['values']['smtp_password'])) {
+    $config->set('smtp_password', $form_state['values']['smtp_password']);
+  }
   $config->set('smtp_from', $form_state['values']['smtp_from']);
   $config->set('smtp_fromname', $form_state['values']['smtp_fromname']);
   $config->set('smtp_allowhtml', $form_state['values']['smtp_allowhtml']);
   $config->set('smtp_test_address', $form_state['values']['smtp_test_address']);
   $config->set('smtp_debugging', $form_state['values']['smtp_debugging']);
-  $config->set('smtp_previous_mail_system', $form_state['values']['smtp_previous_mail_system']);
-  $config->set('mail_system', $form_state['values']['mail_systemg']);
   $config->save();
 
   backdrop_set_message(t('The configuration options have been saved.'));
