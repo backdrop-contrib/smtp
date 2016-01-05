@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Enables Backdrop to send e-mail directly to an SMTP server.
@@ -20,11 +19,11 @@
  */
 function smtp_config_info() {
   $prefixes['smtp.settings'] = array(
-    'label' => t('smtp settings'),
-    'group' => t('smtp'),
+    'label' => t('SMTP settings'),
+    'group' => t('Configuration'),
   );
   return $prefixes;
-} 
+}
 
 /**
  * Implements hook_autoload_info().

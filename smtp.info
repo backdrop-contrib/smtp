@@ -1,7 +1,6 @@
+type = module
 name = SMTP Authentication Support
-description = "Allow for site emails to be sent through an SMTP server of your choice."
-version = BACKDROP_VERSION
+description = Allow for site emails to be sent through an SMTP server of your choice.
 backdrop = 1.x
 package = Mail
-type = module
 configure = admin/config/system/smtp
