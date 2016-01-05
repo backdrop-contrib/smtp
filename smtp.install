@@ -32,7 +32,6 @@ function smtp_update_1000() {
   }
 
   // Migrate variables.
-  $config->set('smtp_library', update_variable_get('smtp_library'));
   $config->set('smtp_on', update_variable_get('smtp_on'));
   $config->set('smtp_queue', update_variable_get('smtp_queue'));
   $config->set('smtp_host', update_variable_get('smtp_host'));
