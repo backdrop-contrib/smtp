@@ -1,5 +1,5 @@
 type = module
-name = SMTP Authentication Support
+name = SMTP Authentication
 description = Allow for site emails to be sent through an SMTP server of your choice.
 backdrop = 1.x
 package = Mail
