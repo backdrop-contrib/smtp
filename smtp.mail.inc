@@ -60,7 +60,6 @@ class SmtpMailSystem implements MailSystemInterface {
   }
 
   public function mailWithoutQueue(array $message) {
-    $id = $message['id'];
     $to = $message['to'];
     $from = $message['from'];
     $body = $message['body'];
