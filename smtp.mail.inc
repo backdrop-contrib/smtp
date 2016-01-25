@@ -86,10 +86,6 @@ class SmtpMailSystem implements MailSystemInterface {
     }
 
     //Hack to fix reply-to issue.
-    $properfrom = variable_get('site_mail', '');
-    if (!empty($properfrom)) {
-      $headers['From'] = $properfrom;
-    }
     if (!isset($headers['Reply-To']) || empty($headers['Reply-To'])) {
       if (strpos($from, '<')) {
         $reply = preg_replace('/>.*/', '', preg_replace('/.*</', '', $from));
@@ -98,6 +94,11 @@ class SmtpMailSystem implements MailSystemInterface {
         $reply = $from;
       }
       $headers['Reply-To'] = $reply;
+    }
+    $properfrom = variable_get('site_mail', '');
+    if (!empty($properfrom)) {
+      $headers['From'] = $properfrom;
+      $from = $properfrom;
     }
 
     // Blank value will let the e-mail address appear.
