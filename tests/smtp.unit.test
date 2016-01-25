@@ -1,0 +1,72 @@
+<?php
+/**
+ * @file
+ * Some tests for the SMTP module.
+ */
+
+class SmtpUnitTest extends DrupalWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'SMTP unit tests',
+      'description' => 'Test the SMTP module.',
+      'group' => 'SMTP',
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function setUp(array $modules = array()) {
+    // Requirements.
+    $modules[] = 'smtp';
+
+    // This module is used to log all emails so that the delivery can be
+    // confirmed.
+    $modules[] = 'maillog';
+
+    parent::setUp($modules);
+
+    // Turn on certain things to prevent unwanted email deliveries.
+
+    // Turn on the mail module.
+    variable_set('smtp_on', TRUE);
+    // Do not actually deliver the emails.
+    variable_set('smtp_deliver', FALSE);
+
+    // Settings for Maillog.
+
+    // Take over the email system.
+    variable_set('mail_system', array('default-system' => 'SmtpMailSystem'));
+    // Log all emails.
+    variable_set('maillog_log', TRUE);
+
+    // Assign some default values so the 
+  }
+
+  /**
+   * Confirm that SMTP has taken over the 'mail_system' variable.
+   */
+  function testSetup() {
+    $enabled = variable_get('mail_system', array());
+    $should_be = array(
+      'default-system' => 'SmtpMailSystem',
+    );
+    $this->assertEqual($enabled, $should_be, 'SMTP is controlling mail delivery.');
+
+    $delivery = variable_get('smtp_on', TRUE);
+    $this->assertEqual($delivery, TRUE, 'SMTP is enabled.');
+
+    $delivery = variable_get('smtp_deliver', FALSE);
+    $this->assertEqual($delivery, FALSE, 'Email delivery is disabled.');
+
+    $logging = variable_get('maillog_log', TRUE);
+    $this->assertEqual($logging, TRUE, 'Email delivery is being logged.');
+  }
+
+  /**
+   * 
+   */
+}
