@@ -50,7 +50,7 @@ class SmtpMailSystem implements MailSystemInterface {
        && (!isset($message['params']['skip_queue']) || !$message['params']['skip_queue'])) {
       smtp_send_queue($message);
       if (variable_get('smtp_debugging', SMTP_LOGGING_ERRORS) == SMTP_LOGGING_ALL) {
-        watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $to));
+        watchdog('smtp', 'Queue sending mail to: @to', array('@to' => $message['to']));
       }
       return TRUE;
     }

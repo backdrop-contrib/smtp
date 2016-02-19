@@ -123,7 +123,7 @@ function smtp_send_queue_runner($message) {
 
   // Let the people know what is going on.
   if ($logging == SMTP_LOGGING_ALL) {
-    watchdog('smtp', 'Sending mail to: @to', array('@to' => $to));
+    watchdog('smtp', 'Sending mail to: @to', array('@to' => $message['to']));
   }
 
   $mail_system = new SmtpMailSystem();
