@@ -14,28 +14,11 @@
  *   An array containing form items to place on the module settings page.
  */
 function smtp_admin_settings() {
-  // Override the smtp_library variable.
-  if (module_exists('mimemail') &&
-      strpos(variable_get('smtp_library', ''), 'mimemail')) {
-    // don't touch smtp_library
+  if (variable_get('smtp_on', 0)) {
+    drupal_set_message(t('SMTP.module is active.'));
   }
   else {
-    if (variable_get('smtp_on', 0)) {
-      $smtp_path = drupal_get_filename('module', 'smtp');
-      if ($smtp_path) {
-        variable_set('smtp_library', $smtp_path);
-        drupal_set_message(t('SMTP.module is active.'));
-      }
-      // If drupal can't find the path to the module, display an error.
-      else {
-        drupal_set_message(t("SMTP.module error: Can't find file."), 'error');
-      }
-    }
-    // If this module is turned off, delete the variable.
-    else {
-      variable_del('smtp_library');
-      drupal_set_message(t('SMTP.module is INACTIVE.'));
-    }
+    drupal_set_message(t('SMTP.module is INACTIVE.'));
   }
 
   $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);

@@ -30,10 +30,6 @@ function smtp_uninstall() {
   variable_del('smtp_test_address');
   variable_del('smtp_username');
   variable_del('smtp_debugging');
-
-  if (variable_get('smtp_library', '') == drupal_get_path('module', 'smtp') . '/smtp.module') {
-    variable_del('smtp_library');
-  }
 }
 
 /**
