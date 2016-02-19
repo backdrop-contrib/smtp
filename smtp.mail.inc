@@ -530,6 +530,86 @@ class SmtpMailSystem implements MailSystemInterface {
     $mailer->Port = variable_get('smtp_port', '25');
     $mailer->Mailer = 'smtp';
 
+    // Integration with the Maillog module.
+    if (module_exists('maillog')) {
+      if (variable_get('maillog_log', TRUE)) {
+        $record = new stdClass;
+
+        // In case the subject/from/to is already encoded, decode with
+        // mime_header_decode.
+        $record->header_message_id = isset($mailer->MessageID) ? $mailer->MessageID : NULL;
+        $record->subject = drupal_substr(mime_header_decode($mailer->Subject), 0, 255);
+        $record->header_from = $from;
+        $record->header_to = $to;
+        $record->header_reply_to = isset($headers['Reply-To']) ? $headers['Reply-To'] : '';
+        $record->header_all = serialize($headers);
+        $record->sent_date = REQUEST_TIME;
+
+        // Used to separate different portions of the body string.
+        $divider = str_repeat('-', 60) . "\n";
+
+        // Load the attachments.
+        $attachments = $mailer->GetAttachments();
+
+        $record->body = '';
+
+        // If there's more than one item to display, add a divider.
+        if (!empty($mailer->AltBody) || !empty($attachments)) {
+          $record->body .= t('Body') . ":\n";
+          $record->body .= $divider;
+        }
+
+        // Add the body field.
+        if (isset($mailer->Body)) {
+          $record->body .= $mailer->Body;
+        }
+        else {
+          $record->body .= t('*No message body*') . ":\n";
+        }
+
+        // The AltBody value is optional.
+        if (!empty($mailer->AltBody)) {
+          $record->body .= "\n";
+          $record->body .= $divider;
+          $record->body .= t('Alternative body') . ":\n";
+          $record->body .= $divider;
+          $record->body .= $mailer->AltBody;
+        }
+
+        // List the attachments.
+        if (!empty($attachments)) {
+          $record->body .= "\n";
+          $record->body .= $divider;
+          $record->body .= t('Attachments') . ":\n";
+          $record->body .= $divider;
+          foreach ($attachments as $file) {
+            $record->body .= t('Filename') . ':' . $file[1] . "\n";
+            $record->body .= t('Name') . ':' . $file[2] . "\n";
+            $record->body .= t('Encoding') . ':' . $file[3] . "\n";
+            $record->body .= t('Type') . ':' . $file[4] . "\n";
+            $record->body .= "\n";
+          }
+        }
+
+        drupal_write_record('maillog', $record);
+      }
+
+      // Display the e-mail using Devel module.
+      if (variable_get('maillog_devel', TRUE) && function_exists('dpm')) {
+        $devel_msg = array();
+        $devel_msg[t('Subject')] = $mailer->Subject;
+        $devel_msg[t('From')] = $from;
+        $devel_msg[t('To')] = $to;
+        $devel_msg[t('Reply-To')] = isset($headers['Reply-To']) ? $headers['Reply-To'] : NULL;
+        $devel_msg[t('Headers')] = $headers;
+        $devel_msg[t('Body')] = $mailer->Body;
+        $devel_msg[t('Alternative body')] = $mailer->AltBody;
+        $devel_msg[t('Attachments')] = $mailer->GetAttachments();
+
+        dpm($devel_msg, 'maillog');
+      }
+    }
+
     $error = FALSE;
     if (!$mailer->send()) {
       $params = array(

@@ -183,6 +183,31 @@ function smtp_admin_settings() {
     '#description'   => t('Choose the appropriate log level. "Log everything" will log errors and informational messages when an email is sent. "Errors only" will only create a log entry when sending failed. "No logging" will disable all logging for this module.'),
   );
 
+  $form['debugging']['maillog'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Maillog integration'),
+  );
+
+  if (!module_exists('maillog')) {
+    $form['debugging']['maillog']['#description'] = t('Installing the <a href="@url">Maillog module</a> also allows keeping copies of all emails sent through the site.', array('@url' => 'https://www.drupal.org/project/maillog'));
+  }
+  else {
+    $form['debugging']['maillog']['#description'] = t('The <a href="@url">Maillog module</a> is installed, it can also be used to keep copies of all emails sent through the site.', array('@url' => url('admin/config/development/maillog')));
+
+    $form['debugging']['maillog']['maillog_log'] = array(
+      '#type' => 'checkbox',
+      '#title' => t("Create table entries in maillog table for each e-mail."),
+      '#default_value' => variable_get('maillog_log', TRUE),
+    );
+
+    $form['debugging']['maillog']['maillog_devel'] = array(
+      '#type' => 'checkbox',
+      '#title' => t("Display the e-mails on page using devel module (if enabled)."),
+      '#default_value' => variable_get('maillog_devel', TRUE),
+      '#disabled' => !module_exists('devel'),
+    );
+  }
+
   $form['#submit'][] = 'smtp_admin_settings_form_submit';
 
   return system_settings_form($form);
