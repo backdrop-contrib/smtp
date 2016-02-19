@@ -50,6 +50,8 @@ function smtp_update_7000() {
   if (variable_get('smtp_on', 0) != 0) {
     variable_set('mail_system', array('default-system' => 'SmtpMailSystem'));
   }
+  // Not used any more in D7.
+  variable_del('smtp_library');
 }
 
 /**
@@ -81,4 +83,11 @@ function smtp_update_7101() {
   }
 
   variable_set('smtp_debugging', $logging);
+}
+
+/**
+ * Remove the unused 'smtp_library' variable.
+ */
+function smtp_update_7102() {
+  variable_del('smtp_library');
 }
