@@ -711,7 +711,7 @@ class SmtpMailSystem implements MailSystemInterface {
       $substring = drupal_substr($substring, 0, $string_length);
     }
 
-    return $substring;
+    return trim($substring);
   }  //  End of _smtp_get_substring().
 
   /**
