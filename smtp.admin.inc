@@ -225,7 +225,7 @@ function smtp_admin_settings() {
  */
 function smtp_admin_settings_validate($form, &$form_state) {
   if ($form_state['values']['smtp_on'] == 1 && $form_state['values']['smtp_host'] == '') {
-    form_set_error('smtp_host', t('You must enter an SMTP server address.'));
+    form_set_error('smtp_host', t('You must enter a SMTP server address.'));
   }
 
   if ($form_state['values']['smtp_on'] == 1 && $form_state['values']['smtp_port'] == '') {
