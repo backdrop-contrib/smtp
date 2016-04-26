@@ -157,6 +157,23 @@ function smtp_admin_settings() {
     }
   }
 
+  $form['client'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('SMTP client settings'),
+  );
+  $form['client']['smtp_client_hostname'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Hostname'),
+    '#default_value' => variable_get('smtp_client_hostname', ''),
+    '#description' => t('The hostname to use in the Message-Id and Received headers, and as the default HELO string. Leave blank for using %server_name.', array('%server_name' => isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost.localdomain')),
+  );
+  $form['client']['smtp_client_helo'] = array(
+    '#type' => 'textfield',
+    '#title' => t('HELO'),
+    '#default_value' => variable_get('smtp_client_helo', ''),
+    '#description' => t('The SMTP HELO/EHLO of the message. Defaults to hostname (see above).'),
+  );
+
   $form['email_test'] = array(
     '#type'  => 'fieldset',
     '#title' => t('Send test e-mail'),

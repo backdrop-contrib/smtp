@@ -90,6 +90,14 @@ class SmtpMailSystem implements MailSystemInterface {
       }
     }
 
+    if (variable_get('smtp_client_hostname', '') != '') {
+      $mailer->Hostname = variable_get('smtp_client_hostname', '');
+    }
+
+    if (variable_get('smtp_client_helo', '') != '') {
+      $mailer->Helo = variable_get('smtp_client_helo', '');
+    }
+
     // If i18n is not enabled, we get the From Name through normal variables
     if (!$from_name) {
       if (variable_get('smtp_fromname', '') != '') {

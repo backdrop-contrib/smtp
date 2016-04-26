@@ -30,6 +30,8 @@ function smtp_uninstall() {
   variable_del('smtp_test_address');
   variable_del('smtp_username');
   variable_del('smtp_debugging');
+  variable_del('smtp_client_hostname');
+  variable_del('smtp_client_helo');
 }
 
 /**
