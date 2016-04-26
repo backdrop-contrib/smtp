@@ -76,13 +76,29 @@ class SmtpMailSystem implements MailSystemInterface {
       $mailer->SMTPDebug = TRUE;
     }
 
-    // Set the from name.
-    if (variable_get('smtp_fromname', '') != '') {
-      $from_name = variable_get('smtp_fromname', '');
+    // Set the from name. First we try to get the name from i18n, in the case
+    // that it has been translated. The name is set according to the language
+    // of the email being sent.
+    $from_name = FALSE;
+    if (function_exists('i18n_variable_get')) {
+      if (i18n_variable_get('smtp_fromname', $message['language'], '') != '') {
+        $from_name = i18n_variable_get('smtp_fromname', $message['language'], '');
+      }
+      else {
+        // If value is not defined in settings, use site_name.
+        $from_name = i18n_variable_get('site_name', $message['language'], '');
+      }
     }
-    else {
-      // If value is not defined in settings, use site_name.
-      $from_name = variable_get('site_name', '');
+
+    // If i18n is not enabled, we get the From Name through normal variables
+    if (!$from_name) {
+      if (variable_get('smtp_fromname', '') != '') {
+        $from_name = variable_get('smtp_fromname', '');
+      }
+      else {
+        // If value is not defined in settings, use site_name.
+        $from_name = variable_get('site_name', '');
+      }
     }
 
     //Hack to fix reply-to issue.
