@@ -229,7 +229,7 @@ function smtp_admin_settings_validate($form, &$form_state) {
   }
 
   if ($form_state['values']['smtp_on'] == 1 && $form_state['values']['smtp_port'] == '') {
-    form_set_error('smtp_port', t('You must enter an SMTP port number.'));
+    form_set_error('smtp_port', t('You must enter a SMTP port number.'));
   }
 
   if ($form_state['values']['smtp_from'] && !valid_email_address($form_state['values']['smtp_from'])) {
