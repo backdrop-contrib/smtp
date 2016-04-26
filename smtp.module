@@ -113,8 +113,9 @@ function smtp_send_queue_runner($message) {
       if ($logging == SMTP_LOGGING_ALL || $logging == SMTP_LOGGING_ERRORS) {
         watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.',
           array(
-            @from => $message['from'],
-            @to => $message['to'],
+            '@from' => $message['from'],
+            '@to' => $message['to'],
+            '!error_message' => $message['mailer']->ErrorInfo,
           ), WATCHDOG_ERROR);
       }
     }
