@@ -611,6 +611,11 @@ class SmtpMailSystem implements MailSystemInterface {
         watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', $params, WATCHDOG_ERROR);
       }
     }
+    else {
+      if (variable_get('smtp_debugging', SMTP_LOGGING_ERRORS) == SMTP_LOGGING_ALL) {
+        watchdog('smtp', 'Sent mail to: @to', array('@to' => $to));
+      }
+    }
 
     $mailer->SmtpClose();
     return !$error;
