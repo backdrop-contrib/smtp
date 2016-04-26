@@ -111,6 +111,9 @@ function smtp_admin_settings() {
     '#title'         => t('Password'),
     '#default_value' => variable_get('smtp_password', ''),
     '#description'   => t('SMTP password. If you have already entered your password before, you should leave this field blank, unless you want to change the stored password.'),
+    '#attributes'    => array(
+      'autocomplete' => 'off',
+    ),
   );
 
   $form['email_options'] = array(
