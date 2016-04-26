@@ -79,7 +79,7 @@ function smtp_admin_settings() {
       'ssl'      => t('Use SSL'),
       'tls'      => t('Use TLS'),
     );
-    $encryption_description = t('This allows connection to an SMTP server that requires SSL encryption such as Gmail.');
+    $encryption_description = t('This allows connection to a SMTP server that requires SSL encryption such as Gmail.');
   }
   // If openssl is not installed, use normal protocol.
   else {
