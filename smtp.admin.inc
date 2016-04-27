@@ -30,14 +30,14 @@ function smtp_admin_settings() {
   $form['onoff']['smtp_on'] = array(
     '#type'          => 'radios',
     '#title'         => t('Turn this module on or off'),
-    '#default_value' => variable_get('smtp_on', 0),
+    '#default_value' => variable_get('smtp_on', FALSE),
     '#options'       => array(1 => t('On'), 0 => t('Off')),
     '#description'   => t('To uninstall this module you must turn it off here first.'),
   );
   $form['onoff']['smtp_deliver'] = array(
     '#type'          => 'radios',
     '#title'         => t('Turn on delivery of emails'),
-    '#default_value' => variable_get('smtp_deliver', 1),
+    '#default_value' => variable_get('smtp_deliver', TRUE),
     '#options'       => array(1 => t('On'), 0 => t('Off')),
     '#description'   => t('With this option turned off, email messages will be queued up and processed as normal, but not actually delivered. This option should only be used for testing purposes.'),
   );
