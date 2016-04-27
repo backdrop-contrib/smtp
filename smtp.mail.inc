@@ -593,26 +593,37 @@ class SmtpMailSystem implements MailSystemInterface {
     }
 
     $error = FALSE;
-    if (!$mailer->send()) {
-      $params = array(
-        '@from' => $from,
-        '@to' => $to,
-        '!error_message' => $mailer->ErrorInfo
-      );
 
-      if (variable_get('smtp_queue_fail', FALSE)) {
-        if ($logging) {
-          watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.', $params, WATCHDOG_ERROR);
-        }
-        smtp_failed_messages($message);
-      }
-      elseif ($logging) {
-        $error = TRUE;
-        watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', $params, WATCHDOG_ERROR);
+    // Email delivery was disabled.
+    if (!variable_get('smtp_deliver', TRUE)) {
+      if ($logging) {
+        $params = array(
+          '@from' => $from,
+          '@to' => $to,
+        );
+        watchdog('smtp', 'Email delivery is disabled, did not send email from @from to @to.', $params);
       }
     }
     else {
-      if (variable_get('smtp_debugging', SMTP_LOGGING_ERRORS) == SMTP_LOGGING_ALL) {
+      if (!$mailer->send()) {
+        $params = array(
+          '@from' => $from,
+          '@to' => $to,
+          '!error_message' => $mailer->ErrorInfo
+        );
+
+        if (variable_get('smtp_queue_fail', FALSE)) {
+          if ($logging) {
+            watchdog('smtp', 'Error sending e-mail from @from to @to, will retry on cron run : !error_message.', $params, WATCHDOG_ERROR);
+          }
+          smtp_failed_messages($message);
+        }
+        elseif ($logging) {
+          $error = TRUE;
+          watchdog('smtp', 'Error sending e-mail from @from to @to : !error_message', $params, WATCHDOG_ERROR);
+        }
+      }
+      elseif (variable_get('smtp_debugging', SMTP_LOGGING_ERRORS) == SMTP_LOGGING_ALL) {
         watchdog('smtp', 'Sent mail to: @to', array('@to' => $to));
       }
     }
