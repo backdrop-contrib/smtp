@@ -160,7 +160,13 @@ function smtp_admin_settings() {
       drupal_set_message(t('A test e-mail has been sent to @email.', array('@email' => $test_address)));
     }
     else {
-      drupal_set_message(t('A test e-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => l(t('check the logs'), 'admin/reports/dblog'))));
+      if (module_exists('dblog') && user_access('access site reports')) {
+        $check_logs = l(t('check the logs'), 'admin/reports/dblog');
+      }
+      else {
+        $check_logs = t('check the logs');
+      }
+      drupal_set_message(t('A test e-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => $check_logs)));
     }
   }
 
