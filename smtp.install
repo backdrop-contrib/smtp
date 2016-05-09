@@ -6,6 +6,34 @@
  */
 
 /**
+ * Implements hook_requirements().
+ */
+function smtp_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    if (variable_get('smtp_queue', FALSE) || variable_get('smtp_queue_fail', FALSE)) {
+      $count = db_query("SELECT count('name') FROM {queue} WHERE name='smtp_send_queue'")->fetchField();
+      $requirements['smtp_queue'] = array(
+        'title' => t('SMTP Queue'),
+        'value' => '',
+        'severity' => REQUIREMENT_INFO,
+      );
+      if ($count > 0) {
+        $requirements['smtp_queue']['value'] = format_plural($count, 'There is 1 message queued for delivery.', 'There are @count messages queued for delivery.', array('@count' => $count))
+          . ' '
+          . t('Delivery of the message(s) will be attempted the next time cron runs.');
+      }
+      else {
+        $requirements['smtp_queue']['value'] = t('There are no messages queued for delivery.');
+      }
+    }
+  }
+
+  return $requirements;
+}
+
+/**
  * Implements hook_install().
  */
  function smtp_install() {
