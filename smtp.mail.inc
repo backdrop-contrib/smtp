@@ -66,6 +66,15 @@ class SmtpMailSystem implements MailSystemInterface {
     $headers = $message['headers'];
     $subject = $message['subject'];
 
+    // Optionally reroute all emails to a single address.
+    $reroute_address = variable_get('smtp_reroute_address', '');
+    if (!empty($reroute_address)) {
+      $to = $reroute_address;
+      // Remove any CC and BCC headers that might have been set.
+      unset($headers['cc']);
+      unset($headers['bcc']);
+    }
+
     // Create a new PHPMailer object - autoloaded from registry.
     $mailer = new PHPMailer();
 

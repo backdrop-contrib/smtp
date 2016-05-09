@@ -215,6 +215,12 @@ function smtp_admin_settings() {
     '#default_value' => $logging,
     '#description'   => t('Choose the appropriate log level. "Log everything" will log errors and informational messages when an email is sent. "Errors only" will only create a log entry when sending failed. "No logging" will disable all logging for this module.'),
   );
+  $form['email_test']['smtp_reroute_address'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('E-mail address to reroute all emails to'),
+    '#default_value' => variable_get('smtp_reroute_address', ''),
+    '#description'   => t('All emails sent by the site will be rerouted to this email address; use with caution.'),
+  );
 
   $form['debugging']['maillog'] = array(
     '#type' => 'fieldset',
