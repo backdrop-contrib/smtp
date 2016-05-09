@@ -45,8 +45,10 @@ function smtp_disable() {
 }
 
 /**
- * Implements hook_update_N().
- *
+ * Implementations of hook_update_N().
+ */
+
+/**
  * Upgrade to Drupal 7.x
  */
 function smtp_update_7000() {
@@ -58,8 +60,6 @@ function smtp_update_7000() {
 }
 
 /**
- * Implements hook_update_N().
- *
  * Back to default mail system if the status flag is off.
  */
 function smtp_update_7100() {
@@ -71,8 +71,6 @@ function smtp_update_7100() {
 }
 
 /**
- * Implements hook_update_N().
- *
  * Updating variable value now that new SMTP logging behavior has been
  * implemented.
  */
