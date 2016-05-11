@@ -55,7 +55,6 @@ function smtp_uninstall() {
   variable_del('smtp_protocol');
   variable_del('smtp_queue');
   variable_del('smtp_queue_fail');
-  variable_del('smtp_test_address');
   variable_del('smtp_username');
   variable_del('smtp_debugging');
   variable_del('smtp_client_hostname');
@@ -120,4 +119,13 @@ function smtp_update_7101() {
  */
 function smtp_update_7102() {
   variable_del('smtp_library');
+}
+
+/**
+ * Delete the variable "smtp_test_address". It is unlikely that this would
+ * actually be set in the normal course of events, and it's no longer needed as
+ * it was replaced with a form submit handler.
+ */
+function smtp_update_7103() {
+  variable_del('smtp_test_address');
 }
