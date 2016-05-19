@@ -802,10 +802,11 @@ class PHPMailer {
     $hosts = explode(';', $this->Host);
     $index = 0;
     $connection = $this->smtp->Connected();
+    $lastexception = NULL;
 
     // Retry while there is no connection
-    try {
-      while ($index < count($hosts) && !$connection) {
+    while ($index < count($hosts) && !$connection) {
+      try {
         $hostinfo = array();
         if (preg_match('/^(.+):([0-9]+)$/', $hosts[$index], $hostinfo)) {
           $host = $hostinfo[1];
@@ -840,14 +841,24 @@ class PHPMailer {
             }
           }
         }
-        $index++;
-        if (!$connection) {
-          throw new phpmailerException(t('SMTP Error: Could not connect to SMTP host.'));
+      } catch (phpmailerException $e) {
+        if ($connection) {
+          $this->SmtpClose();
+          $connection = FALSE;
         }
+
+        $lastexception = $e;
       }
-    } catch (phpmailerException $e) {
-      $this->smtp->Reset();
-      throw $e;
+
+      $index++;
+    }
+    if (!$connection) {
+      if ($lastexception != NULL) {
+        throw $lastexception;
+      }
+      else {
+        throw new phpmailerException(t('SMTP Error: Could not connect to SMTP host.'));
+      }
     }
     return TRUE;
   }
