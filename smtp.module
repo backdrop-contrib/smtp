@@ -30,9 +30,9 @@ function smtp_config_info() {
  */
 function smtp_autoload_info() {
   return array(
-    'SmtpMailSystem' => 'smtp.mail.inc',
-    'PHPMailer' => 'smtp.phpmailer.inc',
-    'SMTP' => 'smtp.transport.inc',
+    'SmtpMailSystem' => 'includes/smtp.mail.inc',
+    'PHPMailer' => 'includes/smtp.phpmailer.inc',
+    'SMTP' => 'includes/smtp.transport.inc',
   );
 }
 
