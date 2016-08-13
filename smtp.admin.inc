@@ -141,13 +141,14 @@ function smtp_admin_settings() {
     $params['subject'] = t('Backdrop SMTP test e-mail');
     $params['body']    = array(t('If you receive this message it means your site is capable of using SMTP to send e-mail.'));
     backdrop_mail('smtp', 'smtp-test', $test_address, $language, $params);
+
+    // Set a friendly message.
+    $messsage = t('A test e-mail has been sent to @email.', array('@email' => $test_address));
     if (module_exists('dblog') && user_access('access site reports')) {
-      $check_logs = l(t('check the logs'), 'admin/reports/dblog'));
+      $dbog_url = url('admin/reports/dblog');
+      $messsage .= ' ' . t('You may want to <a href="!url">check the logs</a> for any error messages.', array('!url' => $dbog_url));
     }
-    else {
-      $check_logs = t('check the logs');
-    }
-    backdrop_set_message(t('A test e-mail has been sent to @email. You may want to !check for any error messages.', array('@email' => $test_address, '!check' => $check_logs));
+    backdrop_set_message($messsage);
   }
   $form['email_test'] = array(
     '#type'  => 'fieldset',
