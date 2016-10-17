@@ -133,7 +133,7 @@ class SmtpMailSystem implements MailSystemInterface {
       }
       $headers['Reply-To'] = $reply;
     }
-    $properfrom = variable_get('site_mail', '');
+    $properfrom = variable_get('smtp_from', '');
     if (!empty($properfrom)) {
       $headers['From'] = $properfrom;
       $from = $properfrom;
@@ -166,7 +166,7 @@ class SmtpMailSystem implements MailSystemInterface {
 
     // Defines the From value to what we expect.
     $mailer->From     = $from_comp['email'];
-    $mailer->FromName = $from_comp['name'];
+    $mailer->FromName = empty($from_comp['name']) ? $from_name : $from_comp['name'];
     $mailer->Sender   = $from_comp['email'];
 
 
