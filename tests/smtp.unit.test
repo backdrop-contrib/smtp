@@ -4,17 +4,7 @@
  * Some tests for the SMTP module.
  */
 
-class SmtpUnitTest extends DrupalWebTestCase {
-  /**
-   * {@inheritdoc}
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'SMTP unit tests',
-      'description' => 'Test the SMTP module.',
-      'group' => 'SMTP',
-    );
-  }
+class SmtpUnitTest extends BackdropWebTestCase {
 
   /**
    * {@inheritdoc}
@@ -33,35 +23,36 @@ class SmtpUnitTest extends DrupalWebTestCase {
     parent::setUp($modules);
 
     // Take over the email system.
-    variable_set('mail_system', array('default-system' => 'SmtpMailSystem'));
+    config_set('system.mail', 'default-system', 'SmtpMailSystem');
 
+    $config = config('smtp.settings');
     // Turn on the mail module.
-    variable_set('smtp_on', TRUE);
+    $config->set('smtp_on', TRUE);
 
     // Do not actually deliver the emails.
-    variable_set('smtp_deliver', FALSE);
+    $config->set('smtp_deliver', FALSE);
+    $config->save();
 
     // Use Maillog to log all emails.
-    variable_set('maillog_log', TRUE);
+    config_set('maillog.settings', 'maillog_log', TRUE);
   }
 
   /**
    * Confirm that SMTP has taken over the 'mail_system' variable.
    */
   function testSetup() {
-    $enabled = variable_get('mail_system', array());
-    $should_be = array(
-      'default-system' => 'SmtpMailSystem',
-    );
+    $enabled = config_get('system.mail', 'default-system');
+    $should_be = 'SmtpMailSystem';
     $this->assertEqual($enabled, $should_be, 'SMTP is controlling mail delivery.');
 
-    $delivery = variable_get('smtp_on', TRUE);
+    $config = config('smtp.settings');
+    $delivery = $config->get('smtp_on');
     $this->assertEqual($delivery, TRUE, 'SMTP is enabled.');
 
-    $delivery = variable_get('smtp_deliver', FALSE);
+    $delivery = $config->get('smtp_deliver');
     $this->assertEqual($delivery, FALSE, 'Email delivery is disabled.');
 
-    $logging = variable_get('maillog_log', TRUE);
+    $logging = config_get('maillog.settings', 'maillog_log');
     $this->assertEqual($logging, TRUE, 'Email delivery is being logged.');
   }
 
@@ -78,11 +69,11 @@ class SmtpUnitTest extends DrupalWebTestCase {
     $to_email = 'to_test@example.com';
     $reply_email = 'reply_test@example.com';
     $params = array();
-    drupal_mail('smtp_tests', 'smtp_basic_test', $to_email, $langcode, $params);
+    backdrop_mail('smtp_tests', 'smtp_basic_test', $to_email, $langcode, $params);
 
     // The SMTP module controls the 'from' address but defaults to using the
     // site's system email address.
-    $from_email = variable_get('site_mail', '');
+    $from_email = config_get('system.core', 'site_mail');
 
     // Compare the maillog db entry with the sent mail.
     $logged_email = $this->getLatestMaillogEntry();
@@ -92,7 +83,7 @@ class SmtpUnitTest extends DrupalWebTestCase {
     $this->assertEqual($from_email, $logged_email['header_all']['From']);//, 'Email "from" header is correct.');
     $this->assertEqual($sender, $logged_email['header_all']['Sender']);//, 'Email "sender" header is correct.');
     $this->assertEqual($sender, $logged_email['header_all']['Return-Path']);//, 'Email "return-path" header is correct.');
-    $this->assertEqual('Drupal', $logged_email['header_all']['X-Mailer']);//, 'Email "x-mailer" header is correct.');
+    $this->assertEqual('Backdrop CMS', $logged_email['header_all']['X-Mailer']);//, 'Email "x-mailer" header is correct.');
     $this->assertEqual(t('Test email subject'), $logged_email['subject']);//, 'Email subject is correct.');
     $this->assertEqual(t('Test email body.') . "\n", $logged_email['body']);//, 'Email body is correct.');
   }
@@ -102,7 +93,7 @@ class SmtpUnitTest extends DrupalWebTestCase {
    */
   public function testQueue() {
     // Turn on the queue.
-    variable_set('smtp_queue', TRUE);
+    config_set('smtp.settings', 'smtp_queue', TRUE);
 
     // Send a test message.
     $langcode = language_default('language');
@@ -110,7 +101,7 @@ class SmtpUnitTest extends DrupalWebTestCase {
     $to_email = 'to_test@example.com';
     $reply_email = 'reply_test@example.com';
     $params = array();
-    drupal_mail('smtp_tests', 'smtp_basic_test', $to_email, $langcode, $params);
+    backdrop_mail('smtp_tests', 'smtp_basic_test', $to_email, $langcode, $params);
 
     // Check the queue for messages.
     $queue_count = $this->getQueueCount();
@@ -121,25 +112,27 @@ class SmtpUnitTest extends DrupalWebTestCase {
    * Confirm the queue works.
    */
   public function testFailQueue() {
+    $config = config('smtp.settings');
     // Turn on the queue failover.
-    variable_set('smtp_queue_fail', TRUE);
+    $config->set('smtp_queue_fail', TRUE);
 
     // Make sure the queue is disabled.
-    variable_set('smtp_queue', FALSE);
+    $config->set('smtp_queue', FALSE);
 
     // Turn on email delivery.
-    variable_set('smtp_deliver', TRUE);
+    $config->set('smtp_deliver', TRUE);
 
     // Set some fake values for the delivery, it should fail and then cause the
     // email to go in to the queue.
-    variable_set('smtp_from', 'drupal@example.com');
-    variable_set('smtp_fromname', 'Drupal Simpletest');
-    variable_set('smtp_host', 'smtp.gmail.com');
-    variable_set('smtp_hostbackup', '');
-    variable_set('smtp_password', 'THIS WILL NOT WORK!');
-    variable_set('smtp_port', '465');
-    variable_set('smtp_protocol', 'ssl');
-    variable_set('smtp_username', 'hello@example.com');
+    $config->set('smtp_from', 'backdrop@example.com');
+    $config->set('smtp_fromname', 'Backdrop Simpletest');
+    $config->set('smtp_host', 'smtp.gmail.com');
+    $config->set('smtp_hostbackup', '');
+    $config->set('smtp_password', 'THIS WILL NOT WORK!');
+    $config->set('smtp_port', '465');
+    $config->set('smtp_protocol', 'ssl');
+    $config->set('smtp_username', 'hello@example.com');
+    $config->save();
 
     // Send a test message.
     $langcode = language_default('language');
@@ -147,7 +140,7 @@ class SmtpUnitTest extends DrupalWebTestCase {
     $to_email = 'to_test@example.com';
     $reply_email = 'reply_test@example.com';
     $params = array();
-    drupal_mail('smtp_tests', 'smtp_basic_test', $to_email, $langcode, $params);
+    backdrop_mail('smtp_tests', 'smtp_basic_test', $to_email, $langcode, $params);
 
     // Check the queue for messages.
     $queue_count = $this->getQueueCount('smtp_failure_queue');
@@ -156,7 +149,7 @@ class SmtpUnitTest extends DrupalWebTestCase {
     $this->assertEqual($queue_count, 0, 'An email was not found in the regular email queue.');
 
     // Run the queue so that messages can be moved to the normal email queue.
-    drupal_cron_run();
+    backdrop_cron_run();
 
     // Check the queue for messages.
     $queue_count = $this->getQueueCount();

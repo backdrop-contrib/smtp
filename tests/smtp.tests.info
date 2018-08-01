@@ -1,0 +1,5 @@
+[SmtpUnitTest]
+name = SMTP tests
+description = Test the SMTP module.
+group = SMTP
+file = smtp.unit.test

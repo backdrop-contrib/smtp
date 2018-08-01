@@ -11,7 +11,7 @@ function smtp_requirements($phase) {
   $requirements = array();
 
   if ($phase == 'runtime') {
-    if (variable_get('smtp_queue', FALSE) || variable_get('smtp_queue_fail', FALSE)) {
+    if (config_get('smtp.settings', 'smtp_queue') || config_get('smtp.settings', 'smtp_queue_fail')) {
       $count = db_query("SELECT count('name') FROM {queue} WHERE name='smtp_send_queue'")->fetchField();
       $requirements['smtp_queue'] = array(
         'title' => t('SMTP Queue'),

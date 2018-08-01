@@ -194,8 +194,6 @@ function smtp_admin_settings() {
     '#description'   => t('All emails sent by the site will be rerouted to this email address; use with caution.'),
   );
 
-  /*
-  // Disabled until such point if/when Maillog module is ported.
   $form['debugging']['maillog'] = array(
     '#type' => 'fieldset',
     '#title' => t('Maillog integration'),
@@ -210,17 +208,16 @@ function smtp_admin_settings() {
     $form['debugging']['maillog']['maillog_log'] = array(
       '#type' => 'checkbox',
       '#title' => t("Create table entries in maillog table for each e-mail."),
-      '#default_value' => variable_get('maillog_log', TRUE),
+      '#default_value' => config_get('maillog.settings', 'maillog_log'),
     );
 
     $form['debugging']['maillog']['maillog_devel'] = array(
       '#type' => 'checkbox',
       '#title' => t("Display the e-mails on page using devel module (if enabled)."),
-      '#default_value' => variable_get('maillog_devel', TRUE),
+      '#default_value' => config_get('maillog.settings', 'maillog_devel'),
       '#disabled' => !module_exists('devel'),
     );
   }
-  */
 
   $form['#submit'][] = 'smtp_admin_settings_form_submit';
   $form = system_settings_form($form);
