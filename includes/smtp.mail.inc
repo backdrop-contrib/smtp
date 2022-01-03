@@ -781,7 +781,7 @@ class SmtpMailSystem implements MailSystemInterface {
     //  some name <address@example.com>
     //  "another name" <address@example.com>
     //  <address@example.com>
-    if (preg_match('/^"?([^"\t\n]*)"?\s*<([^>\t\n]*)>$/', $input, $matches)) {
+    if (preg_match('/^"?([^"\t]*)"?\s*<([^>\t\n]*)>$/', $input, $matches)) {
       $components['name'] = trim($matches[1]);
       $components['email'] = trim($matches[2]);
     }
