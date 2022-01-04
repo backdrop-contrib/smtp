@@ -162,6 +162,9 @@ class SmtpUnitTest extends BackdropWebTestCase {
    * Tests email address parsing.
    */
   public function testAddressParsing() {
+    $short_encoded = mime_header_encode('Accent tést');
+    $long_encoded = mime_header_encode('Accent tést - but with a long name see USERNAME_MAX_LENGTH');
+
     $scenarios = array(
       array(
         // Input.
@@ -202,6 +205,23 @@ class SmtpUnitTest extends BackdropWebTestCase {
       array(
         '<address@example.com>',
         array(
+          'email' => 'address@example.com',
+        ),
+      ),
+      array(
+        // Short encoded name: 'Accent tést'.
+        '"' . $short_encoded . '" <address@example.com>',
+        array(
+          'name' => $short_encoded,
+          'email' => 'address@example.com',
+        ),
+      ),
+      array(
+        // Long encoded name, also wrapped with newline:
+        // 'Accent tést - but with a long name see USERNAME_MAX_LENGTH'.
+        '"' . $long_encoded . '" <address@example.com>',
+        array(
+          'name' => $long_encoded,
           'email' => 'address@example.com',
         ),
       ),
