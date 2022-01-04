@@ -4,3 +4,6 @@ package = Mail
 backdrop = 1.x
 type = module
 hidden = TRUE
+
+dependencies[] = smtp
+dependencies[] = maillog

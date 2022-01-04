@@ -159,6 +159,73 @@ class SmtpUnitTest extends BackdropWebTestCase {
   }
 
   /**
+   * Tests email address parsing.
+   */
+  public function testAddressParsing() {
+    $scenarios = array(
+      array(
+        // Input.
+        'name@example.com',
+        // Expected.
+        array(
+          'email' => 'name@example.com',
+        ),
+      ),
+      array(
+        ' name@example.com',
+        array(
+          'input' => 'name@example.com',
+          'email' => 'name@example.com',
+        ),
+      ),
+      array(
+        'name@example.com ',
+        array(
+          'input' => 'name@example.com',
+          'email' => 'name@example.com',
+        ),
+      ),
+      array(
+        'some name <address@example.com>',
+        array(
+          'name' => 'some name',
+          'email' => 'address@example.com',
+        ),
+      ),
+      array(
+        '"some name" <address@example.com>',
+        array(
+          'name' => 'some name',
+          'email' => 'address@example.com',
+        ),
+      ),
+      array(
+        '<address@example.com>',
+        array(
+          'email' => 'address@example.com',
+        ),
+      ),
+    );
+
+    $mail_system = new SmtpMailSystemWrapper();
+
+    foreach ($scenarios as $scenario) {
+      list($input, $expected) = $scenario;
+
+      $ret = $mail_system->getComponents($input);
+
+      if (!empty($expected['input'])) {
+        $this->assertIdentical($expected['input'], $ret['input']);
+      }
+      else {
+        $this->assertIdentical($input, $ret['input']);
+      }
+      $this->assertIdentical(!empty($expected['name']) ? $expected['name'] : '', $ret['name']);
+      $this->assertIdentical(!empty($expected['email']) ? $expected['email'] : '', $ret['email']);
+    }
+  }
+
+  /**
    * Gets the latest Maillog entry.
    *
    * @return array

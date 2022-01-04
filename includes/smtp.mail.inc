@@ -764,6 +764,7 @@ class SmtpMailSystem implements MailSystemInterface {
    *  An array containing a name and an email address.
    */
   protected function _get_components($input) {
+    $input = trim($input);
     $components = array(
       'input' => $input,
       'name' => '',
@@ -773,7 +774,7 @@ class SmtpMailSystem implements MailSystemInterface {
     // If the input is a valid email address in its entirety, then there is
     // nothing to do, just return that.
     if (valid_email_address($input)) {
-      $components['email'] = trim($input);
+      $components['email'] = $input;
       return $components;
     }
 
