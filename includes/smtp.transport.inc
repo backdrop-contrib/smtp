@@ -214,6 +214,34 @@ class SMTP {
   }
 
   /**
+   * Performs OAuth authentication.
+   */
+  public function AuthenticateOAuth($OAuth) {
+
+    //The OAuth instance must be set up prior to requesting auth.
+    if (null === $OAuth) {
+      return false;
+    }
+    $oauth = $OAuth->getOauth64();
+    fputs($this->smtp_conn, 'AUTH XOAUTH2 ' . $oauth . $this->CRLF);
+
+    $rply = $this->get_lines();
+    $code = substr($rply, 0, 3);
+
+    if ($code != 235) {
+      $this->error =
+        array("error" => "AUTH not accepted from server",
+          "smtp_code" => $code,
+          "smtp_msg" => substr($rply, 4));
+      if ($this->do_debug >= 1) {
+        backdrop_set_message(t("SMTP -> ERROR: @error: @rply", array("@error" => $this->error["error"], "@rply" => $rply)));
+      }
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  /**
    * Performs SMTP authentication.  Must be run after running the
    * Hello() method.  Returns TRUE if successfully authenticated.
    * @access public

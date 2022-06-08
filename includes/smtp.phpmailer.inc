@@ -310,7 +310,7 @@ class PHPMailer {
   // PROPERTIES, PRIVATE AND PROTECTED
   /////////////////////////////////////////////////
 
-  private   $smtp           = NULL;
+  protected $smtp           = NULL;
   private   $to             = array();
   private   $cc             = array();
   private   $bcc            = array();

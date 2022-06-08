@@ -98,26 +98,71 @@ function smtp_admin_settings() {
     '#description'   => $encryption_description,
   );
 
-  $form['auth'] = array(
-    '#type'        => 'fieldset',
-    '#title'       => t('SMTP Authentication'),
-    '#description' => t('Leave blank if your SMTP server does not require authentication.'),
-  );
-  $form['auth']['smtp_username'] = array(
-    '#type'          => 'textfield',
-    '#title'         => t('Username'),
-    '#default_value' => $config->get('smtp_username'),
-    '#description'   => t('SMTP Username.'),
-  );
-  $form['auth']['smtp_password'] = array(
-    '#type'          => 'password',
-    '#title'         => t('Password'),
-    '#default_value' => $config->get('smtp_password'),
-    '#description'   => t('SMTP password. If you have already entered your password before, you should leave this field blank, unless you want to change the stored password.'),
-    '#attributes'    => array(
-      'autocomplete' => 'off',
-    ),
-  );
+  if (module_exists('smtp_oauth')) {
+    $form['oauth'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('SMTP OAuth Authentication'),
+      '#description' => t('Set proper values for oauth authentication.'),
+    );
+    $gauth_account_id = config_get('smtp_oauth.settings', 'smtp_oauth_google_api_client_id');
+    $gauth_account = FALSE;
+    if ($gauth_account_id) {
+      $gauth_account = gauth_account_load($gauth_account_id, FALSE);
+      if ($gauth_account['is_authenticated']) {
+        backdrop_set_message(t('Google account is authenticated, ready to send'));
+      }
+      else {
+        $authenticate_link = l(t('Authenticate now'), '/gauth/response_handler/' . $gauth_account_id, array('attributes' => array('target' => "_blank")));
+        backdrop_set_message(t('You need to authenticate with Google, !link', array('!link' => $authenticate_link)), 'warning');
+      }
+    }
+    $form['oauth']['smtp_oauth_google_api_client_id'] = array(
+      '#type'          => 'hidden',
+      '#value' => $gauth_account_id,
+      '#config' => 'smtp_oauth.settings',
+    );
+    $form['oauth']['smtp_oauth_client_id'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Client Id'),
+      '#default_value' => $gauth_account ? $gauth_account['client_id'] : '',
+      '#description'   => t(' OAuth Client ID.'),
+    );
+    $form['oauth']['smtp_oauth_client_secret'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Client Secret'),
+      '#default_value' => $gauth_account ? $gauth_account['client_secret'] : '',
+      '#description'   => t(' OAuth Client Secret.'),
+    );
+    $form['oauth']['smtp_oauth_email_address'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('OAuth Email Address'),
+      '#default_value' => config_get('smtp_oauth.settings', 'smtp_oauth_email_address'),
+      '#description'   => t('Use the gmail address which is authenticated.'),
+      '#config' => 'smtp_oauth.settings',
+    );
+  }
+  else {
+    $form['auth'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('SMTP Authentication'),
+      '#description' => t('Leave blank if your SMTP server does not require authentication.'),
+    );
+    $form['auth']['smtp_username'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Username'),
+      '#default_value' => $config->get('smtp_username'),
+      '#description'   => t('SMTP Username.'),
+    );
+    $form['auth']['smtp_password'] = array(
+      '#type'          => 'password',
+      '#title'         => t('Password'),
+      '#default_value' => $config->get('smtp_password'),
+      '#description'   => t('SMTP password. If you have already entered your password before, you should leave this field blank, unless you want to change the stored password.'),
+      '#attributes'    => array(
+        'autocomplete' => 'off',
+      ),
+    );
+  }
 
   $form['email_options'] = array(
     '#type'  => 'fieldset',
@@ -258,7 +303,13 @@ function smtp_admin_settings_form_submit($form, &$form_state) {
     // Turning on.
     if ($form_state['values']['smtp_on']) {
       $config->set('smtp_previous_mail_system', $mail_system);
-      $mail_system = 'SmtpMailSystem';
+
+      if (module_exists('smtp_oauth')) {
+        $mail_system = 'SmtpOAuthMailSystem';
+      }
+      else {
+        $mail_system = 'SmtpMailSystem';
+      }
     }
     // Turning off.
     else {
@@ -280,6 +331,38 @@ function smtp_admin_settings_form_submit($form, &$form_state) {
   // we must prevent it from being reset.
   elseif (empty($form_state['values']['smtp_password'])) {
     unset($form_state['values']['smtp_password']);
+  }
+
+  if (module_exists('smtp_oauth')) {
+    // Save Google Api Client.
+    if ($form_state['values']['smtp_oauth_google_api_client_id']) {
+      $google_api_client = gauth_account_load($form_state['values']['smtp_oauth_google_api_client_id'], FALSE);
+      $google_api_client['client_id'] = $form_state['values']['smtp_oauth_client_id'];
+      $google_api_client['client_secret'] = $form_state['values']['smtp_oauth_client_secret'];
+      gauth_account_save($google_api_client);
+    }
+    else {
+      $account = [
+        'name' => 'SMTP Google Api Client',
+        'client_id' => $form_state['values']['smtp_oauth_client_id'],
+        'client_secret' => $form_state['values']['smtp_oauth_client_secret'],
+        'access_token' => '',
+        'services' => ['gmail'],
+        'developer_key' => '',
+        'access_type' => 'offline',
+        'is_authenticated' => FALSE,
+      ];
+      $google_api_client = gauth_account_save($account);
+      if (isset($google_api_client['is_error'])) {
+        backdrop_set_message(t('@name:', array('@name' => $account['name'])) . $google_api_client['message'], 'error');
+      }
+      else {
+        config_set('smtp_oauth.settings', 'smtp_oauth_google_api_client_id', $google_api_client['id']);
+      }
+    }
+    $form_state['values']['smtp_oauth_google_api_client_id'] = $google_api_client['id'];
+    unset($form_state['values']['smtp_oauth_client_id']);
+    unset($form_state['values']['smtp_oauth_client_secret']);
   }
 
   // Save the test address to send an email after all the settings have been
