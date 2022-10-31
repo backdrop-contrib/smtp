@@ -14,3 +14,12 @@ function smtp_tests_mail($key, &$message, $params) {
     $message['body'][] = t('Test email body.');
   }
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function smtp_tests_autoload_info() {
+  return array(
+    'SmtpMailSystemWrapper' => 'smtp_tests.mail.inc',
+  );
+}
