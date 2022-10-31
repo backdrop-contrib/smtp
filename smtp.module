@@ -29,7 +29,6 @@ define('SMTP_LOGGING_ALL', 1);
  */
 define('SMTP_LOGGING_ERRORS', 2);
 
-
 /**
  * Implements hook_config_info().
  */
@@ -52,13 +51,12 @@ function smtp_autoload_info() {
   );
 }
 
-
 /**
  * Implements hook_menu().
  */
 function smtp_menu() {
   $items['admin/config/system/smtp'] = array(
-    'title'            => 'SMTP Authentication',
+    'title'            => 'SMTP authentication',
     'page callback'    => 'backdrop_get_form',
     'page arguments'   => array('smtp_admin_settings'),
     'access arguments' => array('administer smtp module'),
@@ -78,7 +76,6 @@ function smtp_permission() {
       'description' => t('Perform administration tasks for SMTP Authentication module.'))
   );
 }
-
 
 /**
  * Implements hook_mail().
