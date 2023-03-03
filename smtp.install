@@ -125,3 +125,31 @@ function smtp_update_1301() {
 function smtp_update_1302() {
   config_clear('smtp.settings', 'smtp_test_address');
 }
+
+/**
+ * Update new config variables from the default config file if they haven't been
+ * set yet.
+ */
+function smtp_update_1303() {
+
+  // Get the default config file.
+  $default_data = backdrop_json_decode(file_get_contents(backdrop_get_path('module', 'smtp') . '/config/smtp.settings.json'));
+  $vars = array(
+    'smtp_queue_fail',
+    'smtp_client_hostname',
+    'smtp_client_helo',
+    'smtp_deliver',
+    'smtp_reroute_address',
+  );
+  $config = config('smtp.settings');
+  $dirty = FALSE;
+  foreach ($vars as $var) {
+    if (is_null($config->get($var))) {
+      $config->set($var, $default_data[$var]);
+      $dirty = TRUE;
+    }
+  }
+  if ($dirty) {
+    $config->save();
+  }
+}
