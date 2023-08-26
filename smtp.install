@@ -130,3 +130,28 @@ function smtp_update_1301() {
 function smtp_update_1302() {
   config_clear('smtp.settings', 'smtp_test_address');
 }
+
+/**
+ * Update new config variables from the default config file if they haven't been
+ * set yet.
+ */
+function smtp_update_1303() {
+  $vars = array(
+    'smtp_queue_fail' => FALSE,
+    'smtp_client_hostname' => '',
+    'smtp_client_helo' => '',
+    'smtp_deliver' => TRUE,
+    'smtp_reroute_address' => '',
+  );
+  $config = config('smtp.settings');
+  $dirty = FALSE;
+  foreach ($vars as $var => $value) {
+    if (is_null($config->get($var))) {
+      $config->set($var, $value);
+      $dirty = TRUE;
+    }
+  }
+  if ($dirty) {
+    $config->save();
+  }
+}
