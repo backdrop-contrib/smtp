@@ -106,12 +106,17 @@ function smtp_update_1000() {
  * implemented.
  */
 function smtp_update_1301() {
+
+  // Redefine constants for update purposes.
+  $logging_none = 0;
+  $logging_all = 1;
+  $logging_errors = 2;
+
+  $logging = $logging_none;
+
   $old_debugging_value = config_get('smtp.settings', 'smtp_debugging');
-
-  $logging = SMTP_LOGGING_NONE;
-
   if ($old_debugging_value == 1) {
-    $logging = SMTP_LOGGING_ERRORS;
+    $logging = $logging_errors;
   }
 
   config_set('smtp.settings', 'smtp_debugging', $logging);
