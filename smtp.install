@@ -123,11 +123,11 @@ function smtp_update_1301() {
 }
 
 /**
- * Delete the variable "smtp_test_address". It is unlikely that this would
- * actually be set in the normal course of events, and it's no longer needed as
- * it was replaced with a form submit handler.
+ * Delete the variable "smtp_test_address".
  */
 function smtp_update_1302() {
+  // It is unlikely that this would be set in the normal course of events, and
+  // it's no longer needed as it was replaced with a form submit handler.
   config_clear('smtp.settings', 'smtp_test_address');
 }
 
@@ -154,4 +154,11 @@ function smtp_update_1303() {
   if ($dirty) {
     $config->save();
   }
+}
+
+/**
+ * Enable email delivery by default.
+ */
+function smtp_update_1304() {
+  config_set('smtp.settings', 'smtp_deliver', TRUE);
 }
