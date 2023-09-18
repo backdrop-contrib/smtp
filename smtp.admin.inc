@@ -28,7 +28,6 @@ function smtp_admin_settings() {
     '#title'         => t('Turn this module on or off'),
     '#default_value' => $config->get('smtp_on'),
     '#options'       => array(1 => t('On'), 0 => t('Off')),
-    '#description'   => t('To uninstall this module you must turn it off here first.'),
   );
   $form['onoff']['smtp_queue'] = array(
     '#type'  => 'checkbox',

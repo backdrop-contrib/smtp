@@ -35,9 +35,19 @@ function smtp_requirements($phase) {
 /**
  * Implements hook_install().
  */
- function smtp_install() {
+function smtp_install() {
    config_set('smtp.settings', 'smtp_on', 0);
- }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function smtp_uninstall() {
+  // Restore mail system to previous when module is uninstalled.
+  $mail_system = $config->get('smtp_previous_mail_system');
+  // Update system wide config value for mail_system.
+  config_set('system.mail', 'default-system', $mail_system);
+}
 
 /**
  * Implements hook_disable().
@@ -45,6 +55,7 @@ function smtp_requirements($phase) {
 function smtp_disable() {
   $mail_system = config_get('smtp.settings', 'smtp_previous_mail_system');
   config_set('system.mail', 'default-system', $mail_system);
+
 }
 
 /**
