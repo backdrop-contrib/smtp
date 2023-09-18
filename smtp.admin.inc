@@ -30,24 +30,15 @@ function smtp_admin_settings() {
     '#options'       => array(1 => t('On'), 0 => t('Off')),
     '#description'   => t('To uninstall this module you must turn it off here first.'),
   );
-  $form['onoff']['smtp_deliver'] = array(
-    '#type'          => 'radios',
-    '#title'         => t('Turn on delivery of emails'),
-    '#default_value' => $config->get('smtp_deliver'),
-    '#options'       => array(1 => t('On'), 0 => t('Off')),
-    '#description'   => t('With this option turned off, email messages will be queued up and processed as normal, but not actually delivered. This option should only be used for testing purposes.'),
-  );
   $form['onoff']['smtp_queue'] = array(
     '#type'  => 'checkbox',
-    '#title' => t('Send mail by queue'),
+    '#title' => t('Always send mail by queue.'),
     '#default_value' => $config->get('smtp_queue'),
-    '#description'   => t('Mails will be sent by Backdrop queue api.'),
   );
   $form['onoff']['smtp_queue_fail'] = array(
     '#type'  => 'checkbox',
-    '#title' => t('Retry sending mail on error.'),
+    '#title' => t('On error, add mail to the queue and retry sending later.'),
     '#default_value' => $config->get('smtp_queue_fail'),
-    '#description'   => t('Mails will be added to the queue and sent by backdrop queue api.'),
   );
 
   $form['server'] = array(
@@ -220,18 +211,31 @@ function smtp_admin_settings() {
     '#title'       => t('Debugging and logging'),
   );
 
+  $deliver_options = array(
+    1 => t('On: Mail will be delivered as ususal.'),
+    0 => t('Off: Mail will be queued up and processed as normal, but not actually delivered.'));
+  $form['debugging']['smtp_deliver'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Delivery of emails'),
+    '#default_value' => $config->get('smtp_deliver'),
+    '#options'       => $deliver_options,
+    '#description'   => t('Warning: This setting should only be turned Off for testing purposes.'),
+  );
+
   $logging_options = array(
     SMTP_LOGGING_ALL => t('Log everything'),
     SMTP_LOGGING_ERRORS => t('Errors only'),
     SMTP_LOGGING_NONE => t('No logging'),
   );
   $form['debugging']['smtp_debugging'] = array(
-    '#type'          => 'select',
-    '#title'         => t('Logging'),
+    '#type'          => 'radios',
+    '#title'         => t('Log level'),
     '#options'       => $logging_options,
     '#default_value' => $logging,
-    '#description'   => t('Choose the appropriate log level. "Log everything" will log errors and informational messages when an email is sent. "Errors only" will only create a log entry when sending failed. "No logging" will disable all logging for this module.'),
   );
+  $form['debugging']['smtp_debugging'][SMTP_LOGGING_ALL]['#description'] = t("Every time an email is sent, errors and/or informational messages will be logged.");
+  $form['debugging']['smtp_debugging'][SMTP_LOGGING_ERRORS]['#description'] = t("When sending failes, an error message will be logged.");
+  $form['debugging']['smtp_debugging'][SMTP_LOGGING_NONE]['#description'] = t("Nothing will be logged.");
   $form['email_test']['smtp_reroute_address'] = array(
     '#type'          => 'textfield',
     '#title'         => t('E-mail address to reroute all emails to'),
