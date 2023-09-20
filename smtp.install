@@ -168,8 +168,8 @@ function smtp_update_1303() {
 }
 
 /**
- * Enable email delivery by default.
+ * Placeholder update function just incase some people have run it already.
  */
 function smtp_update_1304() {
-  config_set('smtp.settings', 'smtp_deliver', TRUE);
+  // This was an accdidental (but less good) duplicate of smtp_update_1303().
 }
