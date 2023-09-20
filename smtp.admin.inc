@@ -39,7 +39,7 @@ function smtp_admin_settings() {
   );
   $form['smtp']['smtp_queue_fail'] = array(
     '#type'  => 'checkbox',
-    '#title' => t('On error, add mail to the queue and retry sending later.'),
+    '#title' => t('When there is an error, add mail to the queue and retry sending later.'),
     '#default_value' => $config->get('smtp_queue_fail'),
   );
 
