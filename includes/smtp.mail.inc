@@ -485,6 +485,24 @@ class SmtpMailSystem implements MailSystemInterface {
     // Process mimemail attachments, which are prepared in mimemail_mail().
     if (isset($message['params']['attachments'])) {
       foreach ($message['params']['attachments'] as $attachment) {
+        // Allow file objects, handled as mimemail_html_body() does.
+        if (is_object($attachment)) {
+          $file = $attachment;
+          $attachment = array();
+          $attchmentArray = array('filecontent', 'filename', 'filemime');
+          if (isset($file->filepath)) {
+            $attchmentArray = array('filepath', 'filename', 'filemime');
+          }
+          foreach ($attchmentArray as $key) {
+            if (isset($file->{$key})) {
+              $attachment[$key] = $file->{$key};
+            }
+          }
+          if (isset($file->uri)) {
+            $attachment['filepath'] = $file->uri;
+          }
+        }
+
         if (isset($attachment['filecontent'])) {
           $mailer->AddStringAttachment($attachment['filecontent'], $attachment['filename'], 'base64', $attachment['filemime']);
         }
