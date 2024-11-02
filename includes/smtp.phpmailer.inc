@@ -346,7 +346,7 @@ class PHPMailer {
    * @param boolean $exceptions Should we throw external exceptions?
    */
   public function __construct($exceptions = FALSE) {
-    $this->logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
+    $this->logging = config_get('smtp.settings', 'smtp_debugging');
     $this->exceptions = ($exceptions == TRUE);
   }
 
