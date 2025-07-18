@@ -91,7 +91,7 @@ class SmtpMailSystem implements MailSystemInterface {
     $from_name = FALSE;
     $from_comp = $this->_get_components($from);
     // If the From Name has been passed to this function, use that first.
-    if($from_comp['name'] != '') {
+    if ($from_comp['name'] != '') {
       $from_name = $from_comp['name'];
     }
     // If we don't have a From Name set, try to get the name from i18n, in the case
@@ -145,6 +145,11 @@ class SmtpMailSystem implements MailSystemInterface {
     $from = $from_comp['email'];
     if (!isset($headers['Reply-To']) || empty($headers['Reply-To'])) {
       $headers['Reply-To'] = $from;
+
+      // Set the Reply-To in the mailer early.
+      // @see PHPMailer::SetFrom().
+      $replyto_comp = $this->_get_components($from);
+      $mailer->AddReplyTo($replyto_comp['email'], $replyto_comp['name']);
     }
     // If the 'From' address has been set in the SMTP module admin settings, use that as the sender.
     $smtp_from_var = $config->get('smtp_from');
@@ -189,8 +194,8 @@ class SmtpMailSystem implements MailSystemInterface {
       $mailer->AddAddress($to_comp['email'], $to_comp['name']);
     }
 
-    // Parse the headers of the message and set the PHPMailer object's settings
-    // accordingly.
+    // Parse the rest of the headers of the message and set the PHPMailer
+    // object's settings accordingly.
     foreach ($headers as $key => $value) {
       //watchdog('error', 'Key: ' . $key . ' Value: ' . $value);
       switch (backdrop_strtolower($key)) {
@@ -198,7 +203,6 @@ class SmtpMailSystem implements MailSystemInterface {
           // set the correct From headers
           $mailer->setFrom($from, $from_name);
           break;
-
         case 'content-type':
           // Parse several values on the Content-type header, storing them in an array like
           // key=value -> $vars['key']='value'
@@ -261,11 +265,7 @@ class SmtpMailSystem implements MailSystemInterface {
           break;
 
         case 'reply-to':
-          // Only add a "reply-to" if it's not the same as "return-path".
-          if ($value != $headers['Return-Path']) {
-            $replyto_comp = $this->_get_components($value);
-            $mailer->AddReplyTo($replyto_comp['email'], $replyto_comp['name']);
-          }
+          // This is assigned earlier to ensure it gets set correctly.
           break;
 
         case 'content-transfer-encoding':
