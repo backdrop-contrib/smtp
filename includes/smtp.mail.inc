@@ -145,12 +145,13 @@ class SmtpMailSystem implements MailSystemInterface {
     $from = $from_comp['email'];
     if (!isset($headers['Reply-To']) || empty($headers['Reply-To'])) {
       $headers['Reply-To'] = $from;
-
-      // Set the Reply-To in the mailer early.
-      // @see PHPMailer::SetFrom().
-      $replyto_comp = $this->_get_components($from);
-      $mailer->AddReplyTo($replyto_comp['email'], $replyto_comp['name']);
     }
+
+    // Set the Reply-To in the mailer early.
+    // @see PHPMailer::SetFrom().
+    $replyto_comp = $this->_get_components($headers['Reply-To']);
+    $mailer->AddReplyTo($replyto_comp['email'], $replyto_comp['name']);
+
     // If the 'From' address has been set in the SMTP module admin settings, use that as the sender.
     $smtp_from_var = $config->get('smtp_from');
     if (($smtp_from_var) && valid_email_address($smtp_from_var)) {
