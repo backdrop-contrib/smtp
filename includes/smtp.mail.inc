@@ -501,7 +501,15 @@ class SmtpMailSystem implements MailSystemInterface {
 
     // Set the authentication settings.
     $username = $config->get('smtp_username');
-    $password = $config->get('smtp_password');
+    $password = '';
+    if (!module_exists('key')) {
+      $password = $config->get('smtp_password');
+    }
+    else {
+      if ($key_id = $config->get('secret_key')) {
+        $password = key_get_key_value($key_id);
+      }
+    }
 
     // If username and password are given, use SMTP authentication.
     if ($username != '' && $password != '') {
