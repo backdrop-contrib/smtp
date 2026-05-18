@@ -809,7 +809,13 @@ class PHPMailer {
         throw $lastexception;
       }
       else {
-        throw new phpmailerException(t('SMTP Error: Could not connect to SMTP host.'));
+        // Surface the fsockopen errno/errstr the transport already captured.
+        $detail = '';
+        $error = $this->smtp->getError();
+        if (is_array($error)) {
+          $detail = ' (' . ($error['errstr'] ?? '') . ' [errno ' . ($error['errno'] ?? 0) . '])';
+        }
+        throw new phpmailerException(t('SMTP Error: Could not connect to SMTP host.') . $detail);
       }
     }
     return TRUE;
