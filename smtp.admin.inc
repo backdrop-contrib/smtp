@@ -110,6 +110,7 @@ function smtp_admin_settings() {
         backdrop_set_message(t('You need to authenticate with Google, !link', array('!link' => $authenticate_link)), 'warning');
       }
     }
+
     $form['smtp']['oauth']['smtp_oauth_google_api_client_id'] = array(
       '#type'          => 'hidden',
       '#value' => $gauth_account_id,
@@ -135,6 +136,33 @@ function smtp_admin_settings() {
       '#config' => 'smtp_oauth.settings',
     );
   }
+
+  elseif (module_exists('key')) {
+    $form['smtp']['key'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('SMTP Authentication'),
+      '#description' => t('Leave blank if your SMTP server does not require authentication.'),
+      '#collapsible' => TRUE,
+    );
+    $description = t('Choose an available key.');
+    if (user_access('administer keys')) {
+      $key_link = l(t('create a new key'), 'admin/config/system/keys/add');
+      $description = t('Choose an available key. If the desired key is not listed, !link.', array('!link' => $key_link));
+    }
+    $form['smtp']['key']['smtp_username'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Username'),
+      '#default_value' => $config->get('smtp_username'),
+      '#description'   => t('SMTP Username.'),
+    );
+    $form['smtp']['key']['secret_key'] = array(
+      '#type' => 'key_select',
+      '#title' => t('Secret key'),
+      '#default_value' => $config->get('secret_key'),
+      '#description' => $description,
+    );
+  }
+
   else {
     $form['smtp']['auth'] = array(
       '#type'        => 'fieldset',
@@ -388,6 +416,10 @@ function smtp_admin_settings_form_submit($form, &$form_state) {
   // updated.
   $form_state['storage']['smtp']['smtp_test_address'] = $form_state['values']['smtp_test_address'];
   unset($form_state['values']['smtp_test_address']);
+
+  if (module_exists('key') && !empty($form_state['values']['secret_key'])) {
+    $config->set('secret_key', $form_state['values']['secret_key']);
+  }
 }
 
 /**
