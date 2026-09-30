@@ -135,6 +135,29 @@ function smtp_admin_settings() {
       '#config' => 'smtp_oauth.settings',
     );
   }
+
+  elseif (module_exists('key')) {
+    $form['smtp']['key'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('SMTP Authentication'),
+      '#description' => t('Leave blank if your SMTP server does not require authentication.'),
+      '#collapsible' => TRUE,
+    );
+    $description = t('Choose an available key.');
+    if (user_access('administer keys')) {
+      $key_link = l(t('create a new key'), 'admin/config/system/keys/add');
+      $description = t('Choose an available key. If the desired key is not listed, !link.', array('!link' => $key_link));
+    }
+    $form['smtp']['key']['smtp_key_id'] = array(
+      '#type' => 'key_select',
+      '#title' => t('SMTP credentials key'),
+      '#default_value' => $config->get('smtp_key_id'),
+      '#empty_value' => '',
+      '#empty_option' => t('- None -'),
+      '#description' => $description . ' ' . t('The key value must be JSON with "username" and "password" properties, for example: {"username":"smtp-user","password":"smtp-password"}.'),
+    );
+  }
+
   else {
     $form['smtp']['auth'] = array(
       '#type'        => 'fieldset',
@@ -388,6 +411,10 @@ function smtp_admin_settings_form_submit($form, &$form_state) {
   // updated.
   $form_state['storage']['smtp']['smtp_test_address'] = $form_state['values']['smtp_test_address'];
   unset($form_state['values']['smtp_test_address']);
+
+  if (module_exists('key')) {
+    $config->set('smtp_key_id', $form_state['values']['smtp_key_id']);
+  }
 }
 
 /**
